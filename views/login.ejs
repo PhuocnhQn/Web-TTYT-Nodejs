@@ -1,0 +1,136 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login</title>
+    <link rel="stylesheet" href="/css/login.css">
+</head>
+
+<body>
+    <main>
+        <h1>Báo cáo Đề án 06</h1>
+        <h1>TTYT Huyện Trà Bồng</h1>
+        <form id="loginForm" action="/login" method="POST">
+            <label for="username">Username:</label>
+            <input type="text" name="username" id="username" required>
+
+            <label for="password">Password:</label>
+            <input type="password" name="password" id="password" required>
+
+            <div class="remember-me">
+                <input type="checkbox" name="rememberMe" id="rememberMe">
+                <label for="rememberMe">Remember me</label>
+            </div>
+
+            <button type="submit">Login</button>
+        </form>
+        <!-- Notification area -->
+        <div id="notification" class="hidden"></div>
+    </main>
+
+    <script>
+        document.getElementById("loginForm").addEventListener("submit", async (event) => {
+            event.preventDefault(); // Ngăn chặn form gửi thông tin theo cách mặc định
+
+            const username = document.getElementById("username").value;
+            const password = document.getElementById("password").value;
+            const rememberMe = document.getElementById("rememberMe").checked;
+
+            const notification = document.getElementById("notification");
+
+            // Gửi yêu cầu đến máy chủ
+            try {
+                const response = await fetch("/login", {
+                    method: "POST",
+                    headers: {
+                        "Content-Type": "application/x-www-form-urlencoded",
+                    },
+                    body: new URLSearchParams({
+                        username,
+                        password,
+                    }),
+                });
+
+                const result = await response.json();
+
+                if (result.success) {
+                    // Nếu đăng nhập thành công, lưu thông tin nếu Remember Me được chọn
+                    if (rememberMe) {
+                        localStorage.setItem("username", username);
+                        localStorage.setItem("password", password);
+                        localStorage.setItem("rememberMe", true);
+                    } else {
+                        localStorage.clear();
+                    }
+
+                    showNotification("Đăng nhập thành công!", "success");
+                    // Chuyển hướng tới trang khác sau khi hiển thị thông báo
+                    setTimeout(() => {
+                        window.location.href = "/dashboard";
+                    }, 500);
+                } else {
+                    showNotification(result.message, "error");
+                }
+            } catch (error) {
+                showNotification("Có lỗi xảy ra. Vui lòng thử lại!", "error");
+            }
+        });
+
+        // Hàm hiển thị thông báo
+        function showNotification(message, type) {
+            const notification = document.getElementById("notification");
+            notification.textContent = message;
+            notification.className = type; // Thêm lớp 'success' hoặc 'error'
+            notification.classList.remove("hidden");
+
+            // Hiển thị thông báo với hiệu ứng
+            setTimeout(() => {
+                notification.style.opacity = "1";
+                notification.style.transform = "translateY(0)";
+            }, 10);
+
+            // Ẩn thông báo sau 3 giây
+            setTimeout(() => {
+                notification.style.opacity = "0";
+                notification.style.transform = "translateY(-10px)";
+                setTimeout(() => notification.classList.add("hidden"), 300);
+            }, 3000);
+        }
+
+    </script>
+    <script>
+        // Check if user credentials are saved in localStorage
+        document.addEventListener("DOMContentLoaded", () => {
+            const savedUsername = localStorage.getItem("username");
+            const savedPassword = localStorage.getItem("password");
+            const rememberMe = localStorage.getItem("rememberMe") === "true";
+
+            if (rememberMe) {
+                document.getElementById("username").value = savedUsername || "";
+                document.getElementById("password").value = savedPassword || "";
+                document.getElementById("rememberMe").checked = true;
+            }
+        });
+
+        // Save credentials if Remember Me is checked
+        document.getElementById("loginForm").addEventListener("submit", () => {
+            const rememberMe = document.getElementById("rememberMe").checked;
+            if (rememberMe) {
+                const username = document.getElementById("username").value;
+                const password = document.getElementById("password").value;
+                localStorage.setItem("username", username);
+                localStorage.setItem("password", password);
+                localStorage.setItem("rememberMe", true);
+            } else {
+                // Clear saved credentials if Remember Me is unchecked
+                localStorage.removeItem("username");
+                localStorage.removeItem("password");
+                localStorage.removeItem("rememberMe");
+            }
+        });
+    </script>
+</body>
+
+</html>

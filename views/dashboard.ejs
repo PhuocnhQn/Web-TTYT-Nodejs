@@ -1,0 +1,252 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard</title>
+    <link rel="stylesheet" href="/css/dashboard.css">
+</head>
+
+<body>
+    <h1>Welcome, <%= user.name %>
+    </h1>
+    <p>Role: <%= user.role %>
+    </p>
+
+    <!-- Admin Functionality -->
+    <% if (user.role==='admin' ) { %>
+        <figure>
+            <h2>Admin Actions</h2>
+            <figcaption>
+                <form id="addUserForm">
+                    <label for="name">Name:</label>
+                    <input type="text" id="name" name="name" required>
+
+                    <label for="username">Username:</label>
+                    <input type="text" id="username" name="username" required>
+
+                    <label for="password">Password:</label>
+                    <input type="password" id="password" name="password" required>
+
+                    <label for="role">Role:</label>
+                    <select id="role" name="role" required>
+                        <option value="user">User</option>
+                        <option value="admin">Admin</option>
+                    </select>
+
+                    <button type="submit">Add User</button>
+                </form>
+
+                <!-- Notification -->
+                <div id="notification" class="hidden"></div>
+                <form action="/reports/export" method="GET">
+                    <label for="month">Select Month:</label>
+                    <select name="month" id="month">
+                        <option value="1">January</option>
+                        <option value="2">February</option>
+                        <option value="3">March</option>
+                        <option value="4">April</option>
+                        <option value="5">May</option>
+                        <option value="6">June</option>
+                        <option value="7">July</option>
+                        <option value="8">August</option>
+                        <option value="9">September</option>
+                        <option value="10">October</option>
+                        <option value="11">November</option>
+                        <option value="12">December</option>
+                    </select>
+
+                    <label for="year">Select Year:</label>
+                    <input type="number" name="year" id="year" value="<%= new Date().getFullYear() %>" required>
+
+                    <button type="submit">Export Reports</button>
+                </form>
+            </figcaption>
+        </figure>
+        <% } %>
+
+            <h2>Your Reports</h2>
+
+            <!-- Form to Add/Edit a Report -->
+            <figure>
+                <form id="reportForm" action="/reports/add" method="POST">
+                    <input type="hidden" id="reportId" name="reportId">
+
+                    <label for="reportingUnit">Đơn vị:</label>
+                    <input type="text" id="reportingUnit" name="reportingUnit" value="<%= user.name %>" <%=user.role
+                        !=='admin' ? 'readonly' : '' %> required>
+
+
+
+                    <label for="month">Tháng:</label>
+                    <input type="number" id="monthin" name="month" min="1" max="12"
+                        value="<%= new Date().getMonth() + 1 %>" required>
+
+
+                    <label for="year">Năm:</label>
+                    <input type="number" id="yearin" name="year" min="2000" max="2100"
+                        value="<%= new Date().getFullYear() %>" required>
+
+                    <label for="totalVisits">Tổng lượt KCB:</label>
+                    <input type="number" id="totalVisits" name="totalVisits" required>
+
+                    <label for="childrenUnder14">Trẻ em dưới 14 tuổi:</label>
+                    <input type="number" id="childrenUnder14" name="childrenUnder14" required>
+
+                    <label for="visitsWithIDExcludingChildren">Khám có CMND (Không bao gồm trẻ em):</label>
+                    <input type="number" id="visitsWithIDExcludingChildren" name="visitsWithIDExcludingChildren"
+                        required>
+
+                    <label for="birthCertificate">Giấy chứng sinh:</label>
+                    <input type="number" id="birthCertificate" name="birthCertificate" required>
+
+                    <label for="deathCertificate">Giấy chứng tử:</label>
+                    <input type="number" id="deathCertificate" name="deathCertificate" required>
+                    <button type="submit">Lưu thông tin</button>
+                </form>
+            </figure>
+
+            <!-- List of Reports -->
+            <ul class="report-list">
+                <% reports.forEach(report=> { %>
+                    <li>
+                        <strong>Đơn Vị:</strong>
+                        <%= report.reportingUnit %> |
+                            <strong>Tháng:</strong>
+                            <%= report.month %> |
+                                <strong>Năm:</strong>
+                                <%= report.year %> |
+                                    <strong>Tổng Lượt Khám:</strong>
+                                    <%= report.totalVisits %> |
+                                        <strong>Số trẻ em dưới 14 tuổi:</strong>
+                                        <%= report.childrenUnder14 %> |
+                                            <strong>Sửa đổi:</strong>
+                                            <%= report.modifications.length %> |
+                                                <!-- Show modification details only if logged in as admin -->
+                                                <% if (user.role==='admin' ) { %>
+                                                    <strong>Thông tin sửa:</strong>
+                                                    <select id="modifications" name="modifications">
+                                                        <% report.modifications.forEach(mod=> { %>
+                                                            <% if (mod.modifiedBy) { %>
+                                                                <option value="<%= mod._id %>">
+                                                                    <%= mod.modifiedBy.username %> | <%=
+                                                                            mod.modifiedAt.toLocaleString() %>
+                                                                </option>
+                                                                <% } else { %>
+                                                                    <option value="<%= mod._id %>">
+                                                                        Unknown User | <%= mod.modifiedAt ?
+                                                                            mod.modifiedAt.toLocaleString()
+                                                                            : 'Unknown Date' %>
+                                                                    </option>
+                                                                    <% } %>
+                                                                        <% }); %>
+                                                    </select>
+                                                    <% } %>
+
+                                                        <!-- Edit Button -->
+                                                        <button class="edit-btn"
+                                                            onclick="populateForm('<%= report._id %>', '<%= report.reportingUnit %>', '<%= report.month %>', '<%= report.year %>', '<%= report.totalVisits %>', '<%= report.childrenUnder14 %>', '<%= report.visitsWithIDExcludingChildren %>', '<%= report.birthCertificate %>', '<%= report.deathCertificate %>')">
+                                                            Sửa
+                                                        </button>
+
+                                                        <!-- Delete Report -->
+                                                        <% if (user.role==='admin' ) { %>
+                                                            <button class="btn btn-danger"
+                                                                onclick="deleteReport('<%= report._id %>')">Xóa</button>
+                                                            <% } %>
+                    </li>
+                    <% }) %>
+            </ul>
+            <!-- Liên kết đến trang Thay đổi mật khẩu -->
+            <p>
+                <a href="/change-password" style="color: blue; text-decoration: underline;">
+                    Thay đổi mật khẩu
+                </a>
+            </p>
+            <a href="/logout" class="logout-btn">Đăng xuất</a>
+            <script>
+                const form = document.getElementById('addUserForm');
+                const notification = document.getElementById('notification');
+
+                form.addEventListener('submit', async (event) => {
+                    event.preventDefault();
+
+                    const formData = new FormData(form);
+                    const data = Object.fromEntries(formData);
+
+                    try {
+                        const response = await fetch('/admin/add-user', {
+                            method: 'POST',
+                            headers: {
+                                'Content-Type': 'application/json',
+                            },
+                            body: JSON.stringify(data),
+                        });
+
+                        const result = await response.json();
+
+                        // Show notification
+                        notification.textContent = result.message;
+                        notification.className = response.ok ? 'success' : 'error';
+                        notification.classList.remove('hidden');
+
+                        // Clear form if successful
+                        if (response.ok) {
+                            form.reset();
+                        }
+                    } catch (error) {
+                        notification.textContent = 'An unexpected error occurred.';
+                        notification.className = 'error';
+                        notification.classList.remove('hidden');
+                        console.error(error);
+                    }
+
+                    // Hide notification after 3 seconds
+                    setTimeout(() => {
+                        notification.classList.add('hidden');
+                    }, 3000);
+                });
+            </script>
+            <script>
+                function deleteReport(reportId) {
+                    fetch(`/reports/delete/${reportId}`, {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                        },
+                        credentials: 'same-origin' // Ensure session cookies are sent
+                    })
+                        .then(response => {
+                            if (response.ok) {
+                                alert('Report deleted successfully');
+                                window.location.href = '/dashboard'; // Redirect to dashboard after successful deletion
+                            } else {
+                                return response.text().then(text => { throw new Error(text) });
+                            }
+                        })
+                        .catch(error => {
+                            alert('Error: ' + error.message);
+                        });
+                }
+
+                // Populate form with report data for editing
+                function populateForm(id, reportingUnit, month, year, totalVisits, childrenUnder14, visitsWithIDExcludingChildren, birthCertificate, deathCertificate) {
+                    document.getElementById('reportId').value = id;
+                    document.getElementById('reportingUnit').value = reportingUnit;
+                    document.getElementById('monthin').value = month;
+                    document.getElementById('yearin').value = year;
+                    document.getElementById('totalVisits').value = totalVisits;
+                    document.getElementById('childrenUnder14').value = childrenUnder14;
+                    document.getElementById('visitsWithIDExcludingChildren').value = visitsWithIDExcludingChildren;
+                    document.getElementById('birthCertificate').value = birthCertificate;
+                    document.getElementById('deathCertificate').value = deathCertificate;
+
+                    // Change the form's action to edit with the specific report ID
+                    document.getElementById('reportForm').action = '/reports/edit/' + id;
+                }
+            </script>
+
+</body>
+
+</html>
