@@ -61,6 +61,7 @@ const ReportSchema = new mongoose.Schema({
     createdAt: { type: Date, default: Date.now }, // Thêm trường createdAt
     birthCertificate: { type: Number, required: true },
     deathCertificate: { type: Number, required: true },
+    percentage: { type: Number, required: true }, // Percentage field
 });
 
 const User = mongoose.model('User', UserSchema);
@@ -167,42 +168,161 @@ app.post('/user/change-password', async (req, res) => {
         return res.status(500).json({ error: 'Đã xảy ra lỗi khi cập nhật mật khẩu.' });
     }
 });
+// Function to fetch users from MongoDB using async/await
+async function fetchUsersFromDatabase() {
+    try {
+        const users = await User.find({});
+        return users;
+    } catch (err) {
+        throw err;  // You can handle the error here or throw it to be handled later
+    }
+}
+
+// Route for displaying the add-user page
+app.get('/add-user', async (req, res) => {
+    if (req.session.role !== 'admin') {
+        return res.status(403).send('Access Denied');
+    }
+
+    try {
+        const users = await fetchUsersFromDatabase();
+        res.render('addUser', { users });
+    } catch (err) {
+        res.status(500).send('Error fetching users');
+    }
+});
+app.post('/add-user', (req, res) => {
+    if (req.session.role !== 'admin') {
+        return res.status(403).send('Access Denied');  // Deny access if not admin
+    }
+
+    const { name, username, password, role } = req.body;
+
+    // Hash the password before storing it
+    bcrypt.hash(password, 10, (err, hashedPassword) => {
+        if (err) {
+            console.error(err);
+            return res.status(500).send('Error hashing password');
+        }
+
+        const newUser = new User({
+            name,
+            username,
+            password: hashedPassword,
+            role
+        });
+
+        newUser.save()
+            .then(() => {
+                // After user is added, fetch the updated user list
+                User.find()
+                    .then((users) => {
+                        res.render('addUser', { users });  // Render the updated user list
+                    })
+                    .catch((err) => {
+                        console.error(err);
+                        res.status(500).send('Error fetching users');
+                    });
+            })
+            .catch((err) => {
+                console.error(err);
+                res.status(500).send('Error adding user');
+            });
+    });
+});
+// Route để lấy danh sách người dùng và hiển thị trên trang
+app.get('/admin/get-users', async (req, res) => {
+    if (req.session.role !== 'admin') {
+        return res.status(403).send('Access Denied');
+    }
+
+    try {
+        const users = await User.find();  // Lấy tất cả người dùng từ cơ sở dữ liệu
+        res.render('addUser', { users });  // Truyền 'users' vào render
+    } catch (error) {
+        console.error('Error fetching users:', error);
+        res.status(500).json({ success: false, message: 'An error occurred while fetching users' });
+    }
+});
 
 
-// Admin route to add users
-app.post('/admin/add-user', async (req, res) => {
+
+
+// Route để lấy thông tin người dùng theo ID
+app.get('/admin/get-user/:id', async (req, res) => {
+    const { id } = req.params;
     if (req.session.role !== 'admin') {
         return res.status(403).json({ success: false, message: 'Access denied' });
     }
 
     try {
-        const { name, username, password, role } = req.body;
-
-        if (!name || !username || !password || !role) {
-            return res.status(400).json({ success: false, message: 'All fields are required' });
+        const user = await User.findById(id);
+        if (!user) {
+            return res.status(404).json({ success: false, message: 'User not found' });
         }
-
-        const existingUser = await User.findOne({ username });
-        if (existingUser) {
-            return res.status(400).json({ success: false, message: 'Username already exists' });
-        }
-
-        const hashedPassword = await bcrypt.hash(password, 10);
-
-        const user = new User({
-            name,
-            username,
-            password: hashedPassword,
-            role,
-        });
-
-        await user.save();
-
-        res.status(201).json({ success: true, message: 'User added successfully' });
+        res.status(200).json({ success: true, user });
     } catch (error) {
-        console.error('Error adding user:', error);
-        res.status(500).json({ success: false, message: 'An error occurred', error: error.message });
+        console.error('Error fetching user:', error);
+        res.status(500).json({ success: false, message: 'An error occurred while fetching the user' });
     }
+});
+
+// Route để xóa người dùng theo ID
+app.post('/delete-user/:id', (req, res) => {
+    // Check if the user is an admin
+    if (req.session.role !== 'admin') {
+        return res.status(403).send('Access Denied');  // Deny access if not admin
+    }
+
+    const userId = req.params.id;
+
+    User.findByIdAndDelete(userId)
+        .then(() => {
+            // After deletion, fetch the remaining users and render the page again
+            User.find()
+                .then((users) => {
+                    res.render('addUser', { users });  // Pass the updated users list to the view
+                })
+                .catch((err) => {
+                    console.error(err);
+                    res.status(500).send('Error fetching users');
+                });
+        })
+        .catch((err) => {
+            console.error(err);
+            res.status(500).send('Error deleting user');
+        });
+});
+
+// Route để cập nhật thông tin người dùng theo ID
+// Route to handle updating user details (without password)
+app.post('/edit-user/:id', (req, res) => {
+    // Check if the user is an admin
+    if (req.session.role !== 'admin') {
+        return res.status(403).send('Access Denied');  // Deny access if not admin
+    }
+
+    const userId = req.params.id;
+    const { name, username, role } = req.body;
+
+    const updateData = { name, username, role };
+
+    User.findByIdAndUpdate(userId, updateData, { new: true })
+        .then(() => {
+            // After update, fetch all users and render the addUser page
+            User.find()
+                .then((users) => {
+                    res.render('addUser', { users });  // Pass the users array to the view
+                })
+                .catch((err) => {
+                    console.error(err);
+                    res.status(500).send('Error fetching users');
+                });
+        })
+        .catch((err) => {
+            console.error(err);
+            res.status(500).send('Error updating user');
+        });
 });
 
 // Dashboard route
@@ -252,11 +372,18 @@ app.post('/reports/add', async (req, res) => {
     try {
         const { reportId, totalVisits, childrenUnder14, visitsWithIDExcludingChildren, reportingUnit, month, year, birthCertificate, deathCertificate } = req.body;
 
+        // Calculate the percentage
+        const totalVisitsExcludingChildren = totalVisits - childrenUnder14;
+        const percentage = totalVisitsExcludingChildren > 0 ?
+            ((visitsWithIDExcludingChildren / totalVisitsExcludingChildren) * 100).toFixed(2) :
+            0;
+
         if (reportId) {
             // Update existing report
             const report = await Report.findOne({ _id: reportId, userId: req.session.userId });
             if (!report) return res.status(404).send('Report not found');
 
+            // Update report fields
             report.totalVisits = totalVisits || report.totalVisits;
             report.childrenUnder14 = childrenUnder14 || report.childrenUnder14;
             report.visitsWithIDExcludingChildren = visitsWithIDExcludingChildren || report.visitsWithIDExcludingChildren;
@@ -265,7 +392,9 @@ app.post('/reports/add', async (req, res) => {
             report.year = year || report.year;
             report.birthCertificate = birthCertificate || report.birthCertificate;
             report.deathCertificate = deathCertificate || report.deathCertificate;
+            report.percentage = percentage || report.percentage;  // Add the percentage to the report
             report.modifications.push({ modificationCount: report.modifications.length + 1 });
+
             await report.save();
         } else {
             // Add a new report
@@ -279,6 +408,7 @@ app.post('/reports/add', async (req, res) => {
                 year,
                 birthCertificate,
                 deathCertificate,
+                percentage,  // Add the percentage to the new report
             });
             await report.save();
         }
@@ -320,6 +450,12 @@ app.post('/reports/delete/:id', async (req, res) => {
 // Edit a report
 app.post('/reports/edit/:id', async (req, res) => {
     try {
+        // const today = new Date();
+        // const currentDay = today.getDate();
+
+        // if (currentDay > 1) {
+        //     return res.status(400).json({ message: 'Không the' });
+        // }
         if (!req.session.userId) return res.status(401).send('Please log in');
 
         const reportId = req.params.id;
@@ -335,6 +471,12 @@ app.post('/reports/edit/:id', async (req, res) => {
 
         // Admin can edit any report, users can only edit their own
         if (req.session.role === 'admin' || report.userId.toString() === req.session.userId.toString()) {
+            // Recalculate the percentage
+            const totalVisitsExcludingChildren = totalVisits - childrenUnder14;
+            const percentage = totalVisitsExcludingChildren > 0 ?
+                ((visitsWithIDExcludingChildren / totalVisitsExcludingChildren) * 100).toFixed(2) :
+                0;
+
             // Update the report with new values (if provided)
             report.totalVisits = totalVisits || report.totalVisits;
             report.childrenUnder14 = childrenUnder14 || report.childrenUnder14;
@@ -344,6 +486,8 @@ app.post('/reports/edit/:id', async (req, res) => {
             report.year = year || report.year;
             report.birthCertificate = birthCertificate || report.birthCertificate;
             report.deathCertificate = deathCertificate || report.deathCertificate;
+            report.percentage = percentage || report.percentage; // Set the recalculated percentage
+
             // Add a modification record with who modified it and when
             report.modifications.push({
                 modifiedBy: req.session.userId, // Lưu userId từ session
@@ -364,7 +508,17 @@ app.post('/reports/edit/:id', async (req, res) => {
         console.error('Error updating report:', error); // Log error for debugging
         res.status(400).send(error);
     }
+
 });
+app.get('/export', (req, res) => {
+    if (req.session.role !== 'admin') {
+        return res.status(403).send('Access denied');
+    }
+
+    // Render the export form page (export.ejs)
+    res.render('export');
+});
+
 //xuất báo cáo
 app.get('/reports/export', async (req, res) => {
     if (req.session.role !== 'admin') {
@@ -399,6 +553,7 @@ app.get('/reports/export', async (req, res) => {
             { header: 'Reporting Unit', key: 'reportingUnit', width: 30 },
             { header: 'Month', key: 'month', width: 10 },
             { header: 'Year', key: 'year', width: 10 },
+            { header: 'Percentage', key: 'percentage', width: 15 }, // Add percentage column
         ];
 
         // Thêm dữ liệu vào worksheet
@@ -416,9 +571,16 @@ app.get('/reports/export', async (req, res) => {
                 birthCertificate: sortedModifications.reduce((value, mod) => mod.birthCertificate ?? value, report.birthCertificate),
                 deathCertificate: sortedModifications.reduce((value, mod) => mod.deathCertificate ?? value, report.deathCertificate),
                 reportingUnit: sortedModifications.reduce((value, mod) => mod.reportingUnit ?? value, report.reportingUnit),
+                percentage: sortedModifications.reduce((value, mod) => mod.percentage ?? value, report.percentage),
                 month: report.month,
                 year: report.year,
             };
+
+            // // Calculate the percentage based on the formula
+            // const totalVisitsExcludingChildren = finalData.totalVisits - finalData.childrenUnder14;
+            // finalData.percentage = totalVisitsExcludingChildren > 0 ?
+            //     ((finalData.visitsWithIDExcludingChildren / totalVisitsExcludingChildren) * 100).toFixed(2) :
+            //     0;
 
             // Thêm dòng dữ liệu vào worksheet
             worksheet.addRow(finalData);
@@ -426,8 +588,10 @@ app.get('/reports/export', async (req, res) => {
 
         // Đặt header cho file Excel
         worksheet.getRow(1).font = { bold: true };
+
         // Đặt tên file dựa trên tháng và năm
         const fileName = `reports-${month}-${year}.xlsx`;
+
         // Gửi file Excel cho người dùng
         res.setHeader('Content-Disposition', `attachment; filename=${fileName}`);
         res.setHeader('Content-Type', 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
@@ -439,6 +603,7 @@ app.get('/reports/export', async (req, res) => {
         console.error('Error exporting reports:', error);
         res.status(500).send('Error exporting reports');
     }
+
 });
 
 

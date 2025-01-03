@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>User List</title>
+    <link rel="stylesheet" href="/css/add-user.css">
+</head>
+
+<body>
+    <h1>Danh sách Người dùng</h1>
+    <!-- Back to Home Button -->
+    <button onclick="window.location.href='/dashboard';">Back to Home</button>
+    <!-- Add User Section (New User Form) -->
+    <h2>Thêm người dùng mới</h2>
+    <form action="/add-user" method="POST">
+        <label for="name">Name:</label>
+        <input type="text" name="name" required><br>
+
+        <label for="username">Username:</label>
+        <input type="text" name="username" required><br>
+
+        <label for="role">Role:</label>
+        <select name="role" required>
+            <option value="admin">User</option>
+            <option value="user">Admin</option>
+        </select><br>
+
+        <label for="password">Password:</label>
+        <input type="password" name="password" required><br>
+
+        <button type="submit">Add User</button>
+    </form>
+
+    <table>
+        <thead>
+            <tr>
+                <th>Name</th>
+                <th>Username</th>
+                <th>Role</th>
+                <th>Actions</th>
+            </tr>
+        </thead>
+        <tbody>
+            <% if (users && users.length> 0) { %>
+                <% users.forEach(user=> { %>
+                    <tr>
+                        <td>
+                            <%= user.name %>
+                        </td>
+                        <td>
+                            <%= user.username %>
+                        </td>
+                        <td>
+                            <%= user.role %>
+                        </td>
+                        <td>
+                            <!-- Edit User Form Inline -->
+                            <button onclick="toggleEditForm('<%= user._id %>')">Edit</button>
+
+                            <form action="/delete-user/<%= user._id %>" method="POST" style="display:inline;"
+                                onsubmit="return confirmDelete()">
+                                <button type="submit">Delete</button>
+                            </form>
+
+                            <!-- Edit User Form for the specific user -->
+                            <form action="/edit-user/<%= user._id %>" method="POST" id="edit-form-<%= user._id %>"
+                                style="display:none;">
+                                <label for="name">Name:</label>
+                                <input type="text" name="name" value="<%= user.name %>" required><br>
+
+                                <label for="username">Username:</label>
+                                <input type="text" name="username" value="<%= user.username %>" required><br>
+
+                                <label for="role">Role:</label>
+                                <select name="role" required>
+                                    <option value="admin" <%=user.role==='admin' ? 'selected' : '' %>>Admin</option>
+                                    <option value="user" <%=user.role==='user' ? 'selected' : '' %>>User</option>
+                                </select><br>
+
+                                <button type="submit">Save Changes</button>
+                            </form>
+                        </td>
+                    </tr>
+                    <% }) %>
+                        <% } else { %>
+                            <tr>
+                                <td colspan="4">No users found</td>
+                            </tr>
+                            <% } %>
+        </tbody>
+    </table>
+
+    <script>
+        // Function to toggle the visibility of the edit form for each user
+        function toggleEditForm(userId) {
+            const editForm = document.getElementById(`edit-form-${userId}`);
+            const isVisible = editForm.style.display === 'block';
+            editForm.style.display = isVisible ? 'none' : 'block';
+        }
+    </script>
+    <script>
+        function confirmDelete() {
+            return confirm("Are you sure you want to delete this user?");
+        }
+    </script>
+</body>
+
+</html>
