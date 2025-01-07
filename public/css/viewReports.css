@@ -1,0 +1,223 @@
+/* Reset and Body */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: 'Arial', sans-serif;
+    line-height: 1.6;
+    background-color: #f4f7fb;
+    color: #333;
+    padding: 20px;
+}
+
+h1,
+h2 {
+    font-size: 2rem;
+    font-weight: 600;
+    color: #333;
+    margin-bottom: 20px;
+}
+
+/* Header (Back to Home Button) */
+header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background-color: #007bff;
+    padding: 15px 20px;
+    border-radius: 8px;
+    color: #fff;
+    margin-bottom: 20px;
+}
+
+header .btn-home {
+    background-color: #fff;
+    color: #007bff;
+    padding: 8px 15px;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    text-transform: uppercase;
+    font-weight: bold;
+    font-size: 14px;
+}
+
+header .btn-home:hover {
+    background-color: #0056b3;
+    color: #fff;
+}
+
+/* Form */
+form {
+    background-color: #fff;
+    padding: 20px;
+    border-radius: 8px;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+    margin-bottom: 30px;
+    display: flex;
+    align-items: center;
+    /* Align items horizontally */
+    gap: 20px;
+    /* Add space between form fields */
+    flex-wrap: wrap;
+    /* Ensure the form wraps on small screens */
+}
+
+form label {
+    font-weight: 600;
+    margin-bottom: 5px;
+    color: #333;
+}
+
+form select,
+form input,
+form button {
+    padding: 12px;
+    border-radius: 5px;
+    border: 1px solid #ddd;
+    font-size: 1rem;
+    color: #333;
+}
+
+form select,
+form input {
+    flex: 1 1 200px;
+    /* Allow the fields to grow/shrink with a minimum width */
+}
+
+form button {
+    background-color: #007bff;
+    color: #fff;
+    cursor: pointer;
+    border: none;
+    transition: background-color 0.3s;
+    width: auto;
+    min-width: 150px;
+}
+
+form button:hover {
+    background-color: #0056b3;
+}
+
+/* Table */
+table {
+    width: 100%;
+    margin-top: 20px;
+    border-collapse: collapse;
+    border-radius: 8px;
+    overflow: hidden;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+}
+
+thead {
+    background-color: #007bff;
+    color: #fff;
+    text-align: left;
+}
+
+thead th {
+    padding: 12px 15px;
+}
+
+tbody {
+    background-color: #fff;
+}
+
+tbody tr {
+    border-bottom: 1px solid #ddd;
+}
+
+tbody td {
+    padding: 12px 15px;
+}
+
+tbody tr:hover {
+    background-color: #f1f1f1;
+}
+
+/* Mobile Responsiveness */
+@media (max-width: 768px) {
+    form {
+        flex-direction: column;
+        /* Stack form fields vertically on small screens */
+    }
+
+    form select,
+    form input,
+    form button {
+        width: 100%;
+        /* Ensure each field takes up full width on small screens */
+    }
+
+    table,
+    thead,
+    tbody,
+    th,
+    td,
+    tr {
+        display: block;
+        width: 100%;
+    }
+
+    thead {
+        display: none;
+        /* Hide header row on mobile */
+    }
+
+    tbody tr {
+        margin-bottom: 15px;
+        border-radius: 8px;
+        background-color: #fff;
+        padding: 10px;
+    }
+
+    tbody td {
+        display: block;
+        padding: 10px 15px;
+        text-align: left;
+        border-bottom: 1px solid #ddd;
+    }
+
+    tbody td:last-child {
+        border-bottom: none;
+    }
+
+    tbody td::before {
+        content: attr(data-label);
+        font-weight: bold;
+        color: #007bff;
+        width: 30%;
+        display: inline-block;
+        margin-right: 10px;
+    }
+}
+
+header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 20px;
+}
+
+h1 {
+    font-size: 24px;
+    margin: 0;
+}
+
+.btn-home {
+    background-color: #007bff;
+    color: white;
+    border: none;
+    padding: 10px 15px;
+    font-size: 16px;
+    cursor: pointer;
+    border-radius: 5px;
+    text-transform: uppercase;
+}
+
+.btn-home:hover {
+    background-color: #0056b3;
+}

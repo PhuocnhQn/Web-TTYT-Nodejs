@@ -11,35 +11,35 @@
 <body>
     <h1>Danh sách Người dùng</h1>
     <!-- Back to Home Button -->
-    <button onclick="window.location.href='/dashboard';">Back to Home</button>
+    <button onclick="window.location.href='/dashboard';">Về trang chủ</button>
     <!-- Add User Section (New User Form) -->
     <h2>Thêm người dùng mới</h2>
     <form action="/add-user" method="POST">
-        <label for="name">Name:</label>
+        <label for="name">Tên:</label>
         <input type="text" name="name" required><br>
 
-        <label for="username">Username:</label>
+        <label for="username">Tài Khoản:</label>
         <input type="text" name="username" required><br>
 
-        <label for="role">Role:</label>
+        <label for="role">Vai Trò:</label>
         <select name="role" required>
             <option value="admin">User</option>
             <option value="user">Admin</option>
         </select><br>
 
-        <label for="password">Password:</label>
+        <label for="password">Mật Khẩu:</label>
         <input type="password" name="password" required><br>
 
-        <button type="submit">Add User</button>
+        <button type="submit">Thêm</button>
     </form>
 
     <table>
         <thead>
             <tr>
-                <th>Name</th>
-                <th>Username</th>
-                <th>Role</th>
-                <th>Actions</th>
+                <th>Tên</th>
+                <th>Tài Khoản</th>
+                <th>Vai Trò</th>
+                <th>Chức năng</th>
             </tr>
         </thead>
         <tbody>
@@ -57,29 +57,32 @@
                         </td>
                         <td>
                             <!-- Edit User Form Inline -->
-                            <button onclick="toggleEditForm('<%= user._id %>')">Edit</button>
+                            <button onclick="toggleEditForm('<%= user._id %>')">Sửa</button>
 
                             <form action="/delete-user/<%= user._id %>" method="POST" style="display:inline;"
                                 onsubmit="return confirmDelete()">
-                                <button type="submit">Delete</button>
+                                <button type="submit">Xóa</button>
                             </form>
 
                             <!-- Edit User Form for the specific user -->
                             <form action="/edit-user/<%= user._id %>" method="POST" id="edit-form-<%= user._id %>"
                                 style="display:none;">
-                                <label for="name">Name:</label>
+                                <label for="name">Tên:</label>
                                 <input type="text" name="name" value="<%= user.name %>" required><br>
 
-                                <label for="username">Username:</label>
+                                <label for="username">Tài Khoản:</label>
                                 <input type="text" name="username" value="<%= user.username %>" required><br>
 
-                                <label for="role">Role:</label>
+                                <label for="role">Vai Trò:</label>
                                 <select name="role" required>
                                     <option value="admin" <%=user.role==='admin' ? 'selected' : '' %>>Admin</option>
                                     <option value="user" <%=user.role==='user' ? 'selected' : '' %>>User</option>
                                 </select><br>
 
-                                <button type="submit">Save Changes</button>
+                                <label for="password">Mật khẩu mới (để trống để giữ nguyên):</label>
+                                <input type="password" name="password"><br>
+
+                                <button type="submit">Lưu</button>
                             </form>
                         </td>
                     </tr>
