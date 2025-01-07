@@ -387,17 +387,56 @@ app.post('/reports/add', async (req, res) => {
             const report = await Report.findOne({ _id: reportId, userId: req.session.userId });
             if (!report) return res.status(404).send('Report not found');
 
-            // Update report fields
-            report.totalVisits = totalVisits || report.totalVisits;
-            report.childrenUnder14 = childrenUnder14 || report.childrenUnder14;
-            report.visitsWithIDExcludingChildren = visitsWithIDExcludingChildren || report.visitsWithIDExcludingChildren;
-            report.reportingUnit = reportingUnit || report.reportingUnit;
-            report.month = month || report.month;
-            report.year = year || report.year;
-            report.birthCertificate = birthCertificate || report.birthCertificate;
-            report.deathCertificate = deathCertificate || report.deathCertificate;
-            report.percentage = percentage || report.percentage;  // Add the percentage to the report
-            report.modifications.push({ modificationCount: report.modifications.length + 1 });
+            // Initialize modifications details array
+            let modificationsDetails = [];
+
+            // Check for changes and add modifications details
+            if (totalVisits && totalVisits !== report.totalVisits) {
+                modificationsDetails.push({ field: 'Tổng lượt KCB', oldValue: report.totalVisits, newValue: totalVisits });
+                report.totalVisits = totalVisits;
+            }
+            if (childrenUnder14 && childrenUnder14 !== report.childrenUnder14) {
+                modificationsDetails.push({ field: 'Trẻ em dưới 14 tuổi', oldValue: report.childrenUnder14, newValue: childrenUnder14 });
+                report.childrenUnder14 = childrenUnder14;
+            }
+            if (visitsWithIDExcludingChildren && visitsWithIDExcludingChildren !== report.visitsWithIDExcludingChildren) {
+                modificationsDetails.push({ field: 'Khám có CCCD (Không bao gồm trẻ em)', oldValue: report.visitsWithIDExcludingChildren, newValue: visitsWithIDExcludingChildren });
+                report.visitsWithIDExcludingChildren = visitsWithIDExcludingChildren;
+            }
+            if (reportingUnit && reportingUnit !== report.reportingUnit) {
+                modificationsDetails.push({ field: 'Đơn vị', oldValue: report.reportingUnit, newValue: reportingUnit });
+                report.reportingUnit = reportingUnit;
+            }
+            if (month && month !== report.month) {
+                modificationsDetails.push({ field: 'Tháng', oldValue: report.month, newValue: month });
+                report.month = month;
+            }
+            if (year && year !== report.year) {
+                modificationsDetails.push({ field: 'Năm', oldValue: report.year, newValue: year });
+                report.year = year;
+            }
+            if (birthCertificate && birthCertificate !== report.birthCertificate) {
+                modificationsDetails.push({ field: 'Giấy chứng sinh', oldValue: report.birthCertificate, newValue: birthCertificate });
+                report.birthCertificate = birthCertificate;
+            }
+            if (deathCertificate && deathCertificate !== report.deathCertificate) {
+                modificationsDetails.push({ field: 'Giấy chứng tử', oldValue: report.deathCertificate, newValue: deathCertificate });
+                report.deathCertificate = deathCertificate;
+            }
+
+            // Recalculate the percentage if necessary
+            if (modificationsDetails.length > 0 || percentage !== report.percentage) {
+                report.percentage = percentage;
+            }
+
+            // Add the modification details with who modified it and when
+            if (modificationsDetails.length > 0) {
+                report.modifications.push({
+                    modifiedBy: req.session.userId,
+                    modifiedAt: new Date(),
+                    modificationsDetails
+                });
+            }
 
             await report.save();
         } else {
