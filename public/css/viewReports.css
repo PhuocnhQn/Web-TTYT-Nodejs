@@ -1,223 +1,238 @@
-/* Reset and Body */
-* {
-    margin: 0;
-    padding: 0;
-    box-sizing: border-box;
-}
-
+/* General Styles */
 body {
     font-family: 'Arial', sans-serif;
     line-height: 1.6;
-    background-color: #f4f7fb;
+    margin: 0;
+    padding: 0;
+    background-color: #f4f4f4;
     color: #333;
+}
+
+/* Header Styles */
+h1 {
+    text-align: center;
+    color: #0078d7;
+    margin-top: 20px;
+}
+
+/* Container Styles */
+.container {
+    max-width: 1200px;
+    /* Giới hạn chiều rộng tối đa của container */
+    margin: 0 auto;
+    /* Căn giữa container trên trang */
     padding: 20px;
-}
-
-h1,
-h2 {
-    font-size: 2rem;
-    font-weight: 600;
-    color: #333;
-    margin-bottom: 20px;
-}
-
-/* Header (Back to Home Button) */
-header {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    background-color: #007bff;
-    padding: 15px 20px;
-    border-radius: 8px;
-    color: #fff;
-    margin-bottom: 20px;
-}
-
-header .btn-home {
+    /* Khoảng cách xung quanh nội dung trong container */
     background-color: #fff;
-    color: #007bff;
-    padding: 8px 15px;
+    /* Màu nền trắng */
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    /* Tạo hiệu ứng bóng đổ nhẹ */
+    border-radius: 8px;
+    /* Bo góc container */
+
+    gap: 20px;
+}
+
+/* Responsive Styles for Container */
+
+
+/* Button Container Styles */
+.btn-container {
+    margin-bottom: 30px;
+    /* Khoảng cách dưới nút "Trang Chủ" */
+    /* text-align: center; */
+    /* Căn giữa nút */
+}
+
+/* Button Styles */
+button {
+    padding: 10px 20px;
+    background-color: #0078d7;
+    color: #fff;
     border: none;
     border-radius: 5px;
+    font-size: 1rem;
     cursor: pointer;
-    text-transform: uppercase;
-    font-weight: bold;
-    font-size: 14px;
+    transition: background-color 0.3s ease;
 }
 
-header .btn-home:hover {
-    background-color: #0056b3;
-    color: #fff;
+button:hover {
+    background-color: #005bb5;
 }
 
-/* Form */
+/* Form Styles */
 form {
-    background-color: #fff;
-    padding: 20px;
-    border-radius: 8px;
-    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
-    margin-bottom: 30px;
     display: flex;
-    align-items: center;
-    /* Align items horizontally */
-    gap: 20px;
-    /* Add space between form fields */
     flex-wrap: wrap;
-    /* Ensure the form wraps on small screens */
+    gap: 20px;
+    justify-content: center;
+    padding: 20px;
+    background: #fff;
+    border-radius: 8px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
 }
 
 form label {
-    font-weight: 600;
-    margin-bottom: 5px;
-    color: #333;
+    font-weight: bold;
+    margin-right: 10px;
 }
 
 form select,
-form input,
-form button {
-    padding: 12px;
-    border-radius: 5px;
+form input[type="number"] {
+    padding: 10px;
     border: 1px solid #ddd;
+    border-radius: 5px;
     font-size: 1rem;
-    color: #333;
-}
-
-form select,
-form input {
-    flex: 1 1 200px;
-    /* Allow the fields to grow/shrink with a minimum width */
 }
 
 form button {
-    background-color: #007bff;
-    color: #fff;
-    cursor: pointer;
-    border: none;
-    transition: background-color 0.3s;
-    width: auto;
-    min-width: 150px;
+    margin-top: 3px;
+    width: 150px;
+    background-color: #28a745;
+}
+
+form button#exportButton {
+    background-color: #ff9800;
 }
 
 form button:hover {
-    background-color: #0056b3;
+    background-color: #005bb5;
 }
 
-/* Table */
+/* Table Styles */
 table {
     width: 100%;
-    margin-top: 20px;
+    max-width: calc(100% - 40px);
+    margin: 20px;
     border-collapse: collapse;
+    background: #fff;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
     border-radius: 8px;
     overflow: hidden;
-    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
 }
 
-thead {
-    background-color: #007bff;
+th,
+td {
+    padding: 0.5px;
+    text-align: center;
+    border: 1px solid #ddd;
+}
+
+th {
+    background-color: #0078d7;
     color: #fff;
-    text-align: left;
 }
 
-thead th {
-    padding: 12px 15px;
+tr:nth-child(even) {
+    background-color: #f9f9f9;
 }
 
-tbody {
-    background-color: #fff;
-}
-
-tbody tr {
-    border-bottom: 1px solid #ddd;
-}
-
-tbody td {
-    padding: 12px 15px;
-}
-
-tbody tr:hover {
+tr:hover {
     background-color: #f1f1f1;
 }
 
-/* Mobile Responsiveness */
+/* User Without Reports Section */
+h3 {
+    margin-top: 30px;
+    color: #0078d7;
+}
+
+ul {
+    list-style: none;
+    padding: 0;
+}
+
+ul li {
+    background: #fff;
+    padding: 10px;
+    margin-bottom: 5px;
+    border: 1px solid #ddd;
+    border-radius: 5px;
+}
+
+/* Footer Styles */
+footer {
+    text-align: center;
+    padding: 20px;
+    background: #004b87;
+    color: #fff;
+    margin-top: 20px;
+    border-top: 5px solid #0078d7;
+}
+
+footer a {
+    color: #ffeb3b;
+    text-decoration: none;
+}
+
+footer a:hover {
+    text-decoration: underline;
+}
+
+/* Responsive Styles */
 @media (max-width: 768px) {
+    .container {
+        padding: 15px;
+        /* Giảm padding trên thiết bị di động */
+    }
+
     form {
         flex-direction: column;
-        /* Stack form fields vertically on small screens */
+        align-items: center;
     }
 
     form select,
-    form input,
+    form input[type="number"],
     form button {
         width: 100%;
-        /* Ensure each field takes up full width on small screens */
+        margin-top: 10px;
     }
 
-    table,
-    thead,
-    tbody,
-    th,
-    td,
-    tr {
-        display: block;
-        width: 100%;
-    }
-
-    thead {
-        display: none;
-        /* Hide header row on mobile */
-    }
-
-    tbody tr {
-        margin-bottom: 15px;
-        border-radius: 8px;
-        background-color: #fff;
-        padding: 10px;
-    }
-
-    tbody td {
-        display: block;
-        padding: 10px 15px;
-        text-align: left;
-        border-bottom: 1px solid #ddd;
-    }
-
-    tbody td:last-child {
-        border-bottom: none;
-    }
-
-    tbody td::before {
-        content: attr(data-label);
-        font-weight: bold;
-        color: #007bff;
-        width: 30%;
-        display: inline-block;
-        margin-right: 10px;
+    table {
+        font-size: 0.9rem;
     }
 }
 
-header {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    margin-bottom: 20px;
+/* New Styles for Divs */
+
+/* Wrapper for the report display section */
+.report-wrapper {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 20px;
+    background-color: #fff;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    border-radius: 8px;
+    margin-top: 30px;
 }
 
-h1 {
-    font-size: 24px;
-    margin: 0;
+/* Styles for the report tables section */
+.table-container {
+    margin-top: 20px;
+    overflow-x: auto;
 }
 
-.btn-home {
-    background-color: #007bff;
-    color: white;
-    border: none;
-    padding: 10px 15px;
-    font-size: 16px;
-    cursor: pointer;
+/* Styles for the users without reports section */
+.users-without-reports {
+    margin-top: 30px;
+}
+
+.users-without-reports ul {
+    padding-left: 20px;
+}
+
+.users-without-reports li {
+    background: #fff;
+    padding: 10px;
+    margin-bottom: 5px;
+    border: 1px solid #ddd;
     border-radius: 5px;
-    text-transform: uppercase;
 }
 
-.btn-home:hover {
-    background-color: #0056b3;
+/* Styles for No reports message */
+.no-reports-message {
+    font-size: 1.2rem;
+    color: #333;
+    text-align: center;
+    margin-top: 30px;
 }

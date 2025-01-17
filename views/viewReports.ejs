@@ -6,79 +6,118 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Xem báo cáo</title>
     <link rel="stylesheet" href="/css/viewReports.css">
-
 </head>
 
 <body>
-    <h1>Xem báo cáo</h1>
-    <!-- Nút trở về trang chủ -->
-    <button onclick="window.location.href='/dashboard';" class="btn-home">Trang Chủ</button>
-    <!-- Form chọn tháng và năm -->
-    <form action="/reports/view" method="GET">
-        <label for="month">Tháng:</label>
-        <select id="month" name="month" required>
-            <% for (let i=1; i <=12; i++) { %>
-                <option value="<%= i %>" <%=month==i ? 'selected' : '' %>><%= i %>
-                </option>
-                <% } %>
-        </select>
+    <div class="container">
+        <h1>Xem báo cáo</h1>
 
-        <label for="year">Năm:</label>
-        <input type="number" id="year" name="year" value="<%= year || new Date().getFullYear() %>" required>
+        <!-- Nút trở về trang chủ -->
+        <div class="btn-container">
+            <button onclick="window.location.href='/dashboard';" class="btn-home">Trang Chủ</button>
+        </div>
 
-        <button type="submit">Xem báo cáo</button>
-    </form>
+        <!-- Form chọn tháng và năm -->
+        <div class="form-container">
+            <form id="reportForm" action="/reports/view" method="GET">
+                <div class="form-group">
+                    <label for="month">Tháng:</label>
+                    <select name="month" id="month">
+                        <option value="1" <%=month==1 ? 'selected' : '' %>>Tháng 1</option>
+                        <option value="2" <%=month==2 ? 'selected' : '' %>>Tháng 2</option>
+                        <option value="3" <%=month==3 ? 'selected' : '' %>>Tháng 3</option>
+                        <option value="4" <%=month==4 ? 'selected' : '' %>>Tháng 4</option>
+                        <option value="5" <%=month==5 ? 'selected' : '' %>>Tháng 5</option>
+                        <option value="6" <%=month==6 ? 'selected' : '' %>>Tháng 6</option>
+                        <option value="7" <%=month==7 ? 'selected' : '' %>>Tháng 7</option>
+                        <option value="8" <%=month==8 ? 'selected' : '' %>>Tháng 8</option>
+                        <option value="9" <%=month==9 ? 'selected' : '' %>>Tháng 9</option>
+                        <option value="10" <%=month==10 ? 'selected' : '' %>>Tháng 10</option>
+                        <option value="11" <%=month==11 ? 'selected' : '' %>>Tháng 11</option>
+                        <option value="12" <%=month==12 ? 'selected' : '' %>>Tháng 12</option>
+                    </select>
+                </div>
 
-    <% if (month && year) { %>
-        <h2>Báo cáo cho <%= month %>/<%= year %>
-        </h2>
+                <div class="form-group">
+                    <label for="year">Năm:</label>
+                    <input type="number" id="year" name="year" value="<%= year || new Date().getFullYear() %>" required>
+                </div>
 
-        <h3>Báo cáo đã nộp</h3>
-        <% if (reports.length> 0) { %>
-            <table border="1">
-                <thead>
-                    <tr>
-                        <th>Đơn vị</th>
-                        <th>Tổng</th>
-                        <th>Trẻ em</th>
-                        <th>CCCD</th>
-                        <th>Giấy Chứng Sinh</th>
-                        <th>Giấy Chứng Tử</th>
-                        <th>Phần Trăm</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    <% reports.forEach(report=> { %>
-                        <tr>
-                            <td>
-                                <%= report.reportingUnit %>
-                            </td>
-                            <td>
-                                <%= report.totalVisits %>
-                            </td>
-                            <td>
-                                <%= report.childrenUnder14 %>
-                            </td>
-                            <td>
-                                <%= report.visitsWithIDExcludingChildren %>
-                            </td>
-                            <td>
-                                <%= report.birthCertificate %>
-                            </td>
-                            <td>
-                                <%= report.deathCertificate %>
-                            </td>
-                            <td>
-                                <%= report.percentage %> %
-                            </td>
-                        </tr>
-                        <% }) %>
-                </tbody>
-            </table>
-            <% } else { %>
-                <p>Không có báo cáo nào được gửi trong tháng này.</p>
-                <% } %>
+                <div class="form-actions">
+                    <button type="button" id="viewButton">Xem</button>
+                    <button type="button" id="exportButton">Xuất</button>
+                </div>
+            </form>
+        </div>
+        <script>
+            document.getElementById('viewButton').addEventListener('click', function () {
+                // Thay đổi action cho form khi nhấn nút "Xem"
+                document.getElementById('reportForm').action = "/reports/view"; // Cập nhật action cho form Xem
+                document.getElementById('reportForm').submit(); // Gửi form Xem
+            });
 
+            document.getElementById('exportButton').addEventListener('click', function () {
+                // Thay đổi action cho form khi nhấn nút "Xuất"
+                document.getElementById('reportForm').action = "/reports/export"; // Cập nhật action cho form Xuất
+                document.getElementById('reportForm').submit(); // Gửi form Xuất
+            });
+
+        </script>
+
+        <% if (month && year) { %>
+            <div class="report-container">
+                <h2>Báo cáo cho <%= month %>/<%= year %>
+                </h2>
+
+                <div class="submitted-reports">
+                    <h3>Báo cáo đã nộp</h3>
+                    <% if (reports.length> 0) { %>
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th>Đơn vị</th>
+                                    <th>Tổng</th>
+                                    <th>Trẻ em</th>
+                                    <th>CCCD</th>
+                                    <th>Giấy Chứng Sinh</th>
+                                    <th>Giấy Chứng Tử</th>
+                                    <th>Phần Trăm</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <% reports.forEach(report=> { %>
+                                    <tr>
+                                        <td>
+                                            <%= report.reportingUnit %>
+                                        </td>
+                                        <td>
+                                            <%= report.totalVisits %>
+                                        </td>
+                                        <td>
+                                            <%= report.childrenUnder14 %>
+                                        </td>
+                                        <td>
+                                            <%= report.visitsWithIDExcludingChildren %>
+                                        </td>
+                                        <td>
+                                            <%= report.birthCertificate %>
+                                        </td>
+                                        <td>
+                                            <%= report.deathCertificate %>
+                                        </td>
+                                        <td>
+                                            <%= report.percentage %> %
+                                        </td>
+                                    </tr>
+                                    <% }) %>
+                            </tbody>
+                        </table>
+                        <% } else { %>
+                            <p>Không có báo cáo nào được gửi trong tháng này.</p>
+                            <% } %>
+                </div>
+
+                <div class="users-without-reports">
                     <h3>Người dùng không có báo cáo</h3>
                     <% if (usersWithoutReports.length> 0) { %>
                         <ul>
@@ -91,9 +130,14 @@
                         <% } else { %>
                             <p>Tất cả người dùng đã gửi báo cáo cho tháng này.</p>
                             <% } %>
-                                <% } else { %>
-                                    <p>Vui lòng chọn tháng và năm để xem báo cáo.</p>
-                                    <% } %>
+                </div>
+            </div>
+            <% } else { %>
+                <p>Vui lòng chọn tháng và năm để xem báo cáo.</p>
+                <% } %>
+
+    </div> <!-- End of container -->
+
 </body>
 
 </html>

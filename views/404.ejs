@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html lang="vi">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Lỗi <%= errorCode %>
+    </title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f4f4f4;
+            text-align: center;
+            padding: 50px;
+        }
+
+        .container {
+            background-color: #fff;
+            padding: 30px;
+            border-radius: 8px;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+            display: inline-block;
+            text-align: center;
+        }
+
+        h1 {
+            color: #d9534f;
+            font-size: 72px;
+            margin: 0;
+        }
+
+        p {
+            font-size: 18px;
+            margin: 20px 0;
+        }
+
+        .btn-home {
+            padding: 10px 20px;
+            background-color: #337ab7;
+            color: white;
+            font-size: 16px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+
+        .btn-home:hover {
+            background-color: #286090;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container">
+        <h1>
+            <%= errorCode %>
+        </h1>
+        <p>
+            <%= errorMessage %>
+        </p>
+        <!-- Quay lại trang chủ bằng thẻ p -->
+        <p>
+            <button onclick="window.location.href='/dashboard';" class="btn-home">Quay lại trang chủ</button>
+        </p>
+    </div>
+</body>
+
+</html>

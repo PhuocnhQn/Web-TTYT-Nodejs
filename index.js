@@ -572,11 +572,17 @@ app.post('/reports/edit/:id', async (req, res) => {
             // Redirect back to the dashboard
             res.redirect('/dashboard');
         } else {
-            return res.status(403).send('You do not have permission to edit this report');
+            // return res.status(403).send('You do not have permission to edit this report');
+            const errorMessage = "You do not have permission to edit this report!";
+            const errorCode = 404;
+            return res.status(errorCode).render('404', { errorMessage, errorCode });
         }
     } catch (error) {
         console.error('Error updating report:', error); // Log error for debugging
-        res.status(400).send(error);
+        // res.status(400).send(error);
+        const errorMessage = error;
+        const errorCode = 404;
+        res.status(errorCode).render('404', { errorMessage, errorCode });
     }
 });
 
@@ -588,14 +594,20 @@ app.get('/reports/view/:id', async (req, res) => {  // Đổi tên route này ch
         const report = await Report.findById(reportId).populate('modifications.modifiedBy', 'username');  // Populate với tên người sửa
 
         if (!report) {
-            return res.status(404).send('Report not found');
+            // return res.status(404).send('Report not found');
+            const errorMessage = "Report not found!";
+            const errorCode = 404;
+            return res.status(errorCode).render('404', { errorMessage, errorCode });
         }
 
         // Trả về dữ liệu báo cáo, bao gồm cả thông tin sửa đổi
         res.render('report-detail', { report });
     } catch (error) {
         console.error('Error fetching report details:', error);
-        res.status(500).send('Internal server error');
+        // res.status(500).send('Internal server error');
+        const errorMessage = "Error fetching report details!";
+        const errorCode = 404;
+        res.status(errorCode).render('404', { errorMessage, errorCode });
     }
 });
 app.get('/reports/view-modification/:modificationId', async (req, res) => {
@@ -637,12 +649,16 @@ app.get('/reports/view-modification/:modificationId', async (req, res) => {
 
 
 app.get('/export', (req, res) => {
+    const user = User.findById(req.session.userId);
     if (req.session.role !== 'admin') {
-        return res.status(403).send('Access denied');
+        // return res.status(403).send('Access denied');
+        const errorMessage = "Bạn không đủ quyền để truy cập trang này!";
+        const errorCode = 404;
+        return res.status(errorCode).render('404', { errorMessage, errorCode });
     }
 
     // Render the export form page (export.ejs)
-    res.render('export');
+    res.render('export', { user });
 });
 app.get('/reports/view', async (req, res) => {
     try {
@@ -682,7 +698,10 @@ app.get('/reports/view', async (req, res) => {
         });
     } catch (error) {
         console.error(error);
-        res.status(500).send('Error fetching reports');
+        // res.status(500).send('Error fetching reports');
+        const errorMessage = "Error fetching reports!";
+        const errorCode = 404;
+        res.status(errorCode).render('404', { errorMessage, errorCode });
     }
 });
 
@@ -690,9 +709,11 @@ app.get('/reports/view', async (req, res) => {
 //xuất báo cáo
 app.get('/reports/export', async (req, res) => {
     if (req.session.role !== 'admin') {
-        return res.status(403).send('Access denied');
+        // return res.status(403).send('Access denied');
+        const errorMessage = "Bạn không có quyền thể truy cần trang này!";
+        const errorCode = 404;
+        return res.status(errorCode).render('404', { errorMessage, errorCode });
     }
-
     try {
         const { month, year } = req.query;
 
@@ -712,16 +733,16 @@ app.get('/reports/export', async (req, res) => {
         // Đặt tiêu đề cột cho file Excel
         worksheet.columns = [
             { header: 'Report ID', key: 'reportId', width: 20 },
-            { header: 'User', key: 'user', width: 30 },
+            // { header: 'User', key: 'user', width: 30 },
+            { header: 'Tháng', key: 'month', width: 10 },
+            { header: 'Năm', key: 'year', width: 10 },
+            { header: 'Đơn Vị', key: 'reportingUnit', width: 30 },
             { header: 'Tổng lượt khám', key: 'totalVisits', width: 15 },
             { header: 'Trẻ em dưới 14 tuổi', key: 'childrenUnder14', width: 20 },
             { header: 'Khám có CCCD (Không bao gồm trẻ em)', key: 'visitsWithIDExcludingChildren', width: 30 },
             { header: 'Giất chứng sinh', key: 'birthCertificate', width: 30 },
             { header: 'Giất chứng tử', key: 'deathCertificate', width: 30 },
-            { header: 'Reporting Unit', key: 'reportingUnit', width: 30 },
-            { header: 'Month', key: 'month', width: 10 },
-            { header: 'Year', key: 'year', width: 10 },
-            { header: 'Percentage', key: 'percentage', width: 15 }, // Add percentage column
+            { header: 'Tỉ lệ phần trăm', key: 'percentage', width: 15 }, // Add percentage column
         ];
 
         // Thêm dữ liệu vào worksheet
@@ -769,7 +790,10 @@ app.get('/reports/export', async (req, res) => {
         res.end();
     } catch (error) {
         console.error('Error exporting reports:', error);
-        res.status(500).send('Error exporting reports');
+        // res.status(500).send('Error exporting reports');
+        const errorMessage = "Error exporting reports!";
+        const errorCode = 404;
+        res.status(errorCode).render('404', { errorMessage, errorCode });
     }
 
 });

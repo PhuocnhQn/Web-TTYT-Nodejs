@@ -14,24 +14,37 @@
     <button onclick="window.location.href='/dashboard';">Về trang chủ</button>
     <!-- Add User Section (New User Form) -->
     <h2>Thêm người dùng mới</h2>
-    <form action="/add-user" method="POST">
-        <label for="name">Tên:</label>
-        <input type="text" name="name" required><br>
+    <div class="form-container">
+        <form action="/add-user" method="POST">
+            <div class="form-group">
+                <label for="name">Tên:</label>
+                <input type="text" name="name" required>
+            </div>
 
-        <label for="username">Tài Khoản:</label>
-        <input type="text" name="username" required><br>
+            <div class="form-group">
+                <label for="username">Tài Khoản:</label>
+                <input type="text" name="username" required>
+            </div>
 
-        <label for="role">Vai Trò:</label>
-        <select name="role" required>
-            <option value="admin">User</option>
-            <option value="user">Admin</option>
-        </select><br>
+            <div class="form-group">
+                <label for="role">Vai Trò:</label>
+                <select name="role" required>
+                    <option value="admin">Admin</option>
+                    <option value="user">User</option>
+                </select>
+            </div>
 
-        <label for="password">Mật Khẩu:</label>
-        <input type="password" name="password" required><br>
+            <div class="form-group">
+                <label for="password">Mật Khẩu:</label>
+                <input type="password" name="password" required>
+            </div>
 
-        <button type="submit">Thêm</button>
-    </form>
+            <div class="form-actions">
+                <button type="submit">Thêm</button>
+            </div>
+        </form>
+    </div>
+
 
     <table>
         <thead>
