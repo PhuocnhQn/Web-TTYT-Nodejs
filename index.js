@@ -671,6 +671,8 @@ app.get('/reports/view', async (req, res) => {
                 usersWithoutReports: [],
                 month: null,
                 year: null,
+                totalTTYT: null,
+                totalTYTXa: null,
             });
         }
 
@@ -690,20 +692,84 @@ app.get('/reports/view', async (req, res) => {
             .filter(user => user.role !== 'admin') // Chỉ lọc người dùng không phải admin
             .filter(user => !userIdsWithReports.includes(user._id.toString()));
 
+        // Tính tổng cho TTYT (CS1 + CS2)
+        let totalTTYT = {
+            totalVisits: 0,
+            childrenUnder14: 0,
+            visitsWithIDExcludingChildren: 0,
+            birthCertificate: 0,
+            deathCertificate: 0,
+            percentage: 0,
+        };
+
+        // Tính tổng cho TYT xã (16 người dùng có tên bắt đầu bằng tyt*)
+        let totalTYTXa = {
+            totalVisits: 0,
+            childrenUnder14: 0,
+            visitsWithIDExcludingChildren: 0,
+            birthCertificate: 0,
+            deathCertificate: 0,
+            percentage: 0,
+        };
+
+        // Cộng tổng cho TTYT (CS1 + CS2)
+        const csReports = filteredReports.filter(report => report.reportingUnit.startsWith('TTYT'));
+        csReports.forEach(report => {
+            totalTTYT.totalVisits += report.totalVisits || 0;
+            totalTTYT.childrenUnder14 += report.childrenUnder14 || 0;
+            totalTTYT.visitsWithIDExcludingChildren += report.visitsWithIDExcludingChildren || 0;
+            totalTTYT.birthCertificate += report.birthCertificate || 0;
+            totalTTYT.deathCertificate += report.deathCertificate || 0;
+        });
+        filteredReports.forEach(report => {
+            console.log(report.reportingUnit); // In ra tất cả giá trị của reportingUnit
+        });
+
+        // Lọc báo cáo cho các trạm có reportingUnit bắt đầu bằng 'tyt'
+        const tytReports = filteredReports.filter(report => report.reportingUnit.startsWith('Trạm Y tế'));
+        tytReports.forEach(report => {
+            totalTYTXa.totalVisits += report.totalVisits || 0;
+            totalTYTXa.childrenUnder14 += report.childrenUnder14 || 0;
+            totalTYTXa.visitsWithIDExcludingChildren += report.visitsWithIDExcludingChildren || 0;
+            totalTYTXa.birthCertificate += report.birthCertificate || 0;
+            totalTYTXa.deathCertificate += report.deathCertificate || 0;
+        });
+        // }
+
+
+        console.error(totalTYTXa.totalVisits);
+
+        // }
+
+        // Tính phần trăm cho tổng, sẽ lấy số CCCD chia cho (tổng - trẻ em)
+        const calculatePercentage = (visitsWithIDExcludingChildren, totalVisits, childrenUnder14) => {
+            // Nếu tổng - trẻ em lớn hơn 0, tính phần trăm, nếu không trả về 0
+            const validTotal = totalVisits - childrenUnder14;
+            return validTotal > 0 ? ((visitsWithIDExcludingChildren / validTotal) * 100).toFixed(2) : 0;
+        };
+
+        // Tính phần trăm cho TTYT
+        totalTTYT.percentage = calculatePercentage(totalTTYT.visitsWithIDExcludingChildren, totalTTYT.totalVisits, totalTTYT.childrenUnder14);
+
+        // Tính phần trăm cho TYT xã
+        totalTYTXa.percentage = calculatePercentage(totalTYTXa.visitsWithIDExcludingChildren, totalTYTXa.totalVisits, totalTYTXa.childrenUnder14);
         res.render('viewReports', {
             reports: filteredReports, // Chỉ hiển thị báo cáo không phải của admin
             usersWithoutReports,
             month,
             year,
+            totalTTYT,
+            totalTYTXa,
         });
     } catch (error) {
         console.error(error);
-        // res.status(500).send('Error fetching reports');
         const errorMessage = "Error fetching reports!";
-        const errorCode = 404;
+        const errorCode = 500;
         res.status(errorCode).render('404', { errorMessage, errorCode });
     }
 });
+
+
 
 
 //xuất báo cáo
@@ -797,8 +863,6 @@ app.get('/reports/export', async (req, res) => {
     }
 
 });
-
-
 
 // Start the server
 const PORT = 3000;

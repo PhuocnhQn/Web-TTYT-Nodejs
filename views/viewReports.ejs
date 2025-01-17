@@ -77,8 +77,8 @@
                                 <tr>
                                     <th>Đơn vị</th>
                                     <th>Tổng</th>
-                                    <th>Trẻ em</th>
                                     <th>CCCD</th>
+                                    <th>Trẻ em</th>
                                     <th>Giấy Chứng Sinh</th>
                                     <th>Giấy Chứng Tử</th>
                                     <th>Phần Trăm</th>
@@ -94,10 +94,10 @@
                                             <%= report.totalVisits %>
                                         </td>
                                         <td>
-                                            <%= report.childrenUnder14 %>
+                                            <%= report.visitsWithIDExcludingChildren %>
                                         </td>
                                         <td>
-                                            <%= report.visitsWithIDExcludingChildren %>
+                                            <%= report.childrenUnder14 %>
                                         </td>
                                         <td>
                                             <%= report.birthCertificate %>
@@ -111,6 +111,53 @@
                                     </tr>
                                     <% }) %>
                             </tbody>
+                            <!-- Thêm hàng tổng -->
+                            <tfoot>
+                                <tr>
+                                    <td><strong>Tổng TTYT (CS1 + CS2)</strong></td>
+                                    <td>
+                                        <%= totalTTYT.totalVisits %>
+                                    </td>
+                                    <td>
+                                        <%= totalTTYT.visitsWithIDExcludingChildren %>
+                                    </td>
+                                    <td>
+                                        <%= totalTTYT.childrenUnder14 %>
+                                    </td>
+                                    <td>
+                                        <%= totalTTYT.birthCertificate %>
+                                    </td>
+                                    <td>
+                                        <%= totalTTYT.deathCertificate %>
+                                    </td>
+                                    <td>
+                                        <%= totalTTYT.percentage %> %
+                                    </td>
+                                </tr>
+                            </tfoot>
+                            <tfoot>
+                                <tr>
+                                    <td><strong>Tổng TYT xã</strong></td>
+                                    <td>
+                                        <%= totalTYTXa.totalVisits %>
+                                    </td>
+                                    <td>
+                                        <%= totalTYTXa.visitsWithIDExcludingChildren %>
+                                    </td>
+                                    <td>
+                                        <%= totalTYTXa.childrenUnder14 %>
+                                    </td>
+                                    <td>
+                                        <%= totalTYTXa.birthCertificate %>
+                                    </td>
+                                    <td>
+                                        <%= totalTYTXa.deathCertificate %>
+                                    </td>
+                                    <td>
+                                        <%= totalTYTXa.percentage %> %
+                                    </td>
+                                </tr>
+                            </tfoot>
                         </table>
                         <% } else { %>
                             <p>Không có báo cáo nào được gửi trong tháng này.</p>
