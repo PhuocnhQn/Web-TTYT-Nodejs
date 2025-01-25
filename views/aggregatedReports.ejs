@@ -4,7 +4,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Xem báo cáo</title>
+    <title>Xem Báo Cáo Tổng Hợp</title>
     <link rel="stylesheet" href="/css/viewReports.css">
     <style>
         /* Include your CSS for dialog from previous answer */
@@ -72,8 +72,7 @@
 
 <body>
     <div class="container">
-        <h1>Xem báo cáo</h1>
-
+        <h1>Xem Báo Cáo Tổng Hợp</h1>
         <!-- Nút trở về trang chủ -->
         <div class="btn-container">
             <button onclick="window.location.href='/dashboard';" class="btn-home">Trang Chủ</button>
@@ -81,33 +80,57 @@
 
         <!-- Form chọn tháng và năm -->
         <div class="form-container">
-            <form id="reportForm" action="/reports/view" method="GET">
+            <form id="reportForm" action="/reports/aggregated" method="GET">
                 <div class="form-group">
-                    <label for="month">Tháng:</label>
-                    <select name="month" id="month">
-                        <option value="1" <%=month==1 ? 'selected' : '' %>>Tháng 1</option>
-                        <option value="2" <%=month==2 ? 'selected' : '' %>>Tháng 2</option>
-                        <option value="3" <%=month==3 ? 'selected' : '' %>>Tháng 3</option>
-                        <option value="4" <%=month==4 ? 'selected' : '' %>>Tháng 4</option>
-                        <option value="5" <%=month==5 ? 'selected' : '' %>>Tháng 5</option>
-                        <option value="6" <%=month==6 ? 'selected' : '' %>>Tháng 6</option>
-                        <option value="7" <%=month==7 ? 'selected' : '' %>>Tháng 7</option>
-                        <option value="8" <%=month==8 ? 'selected' : '' %>>Tháng 8</option>
-                        <option value="9" <%=month==9 ? 'selected' : '' %>>Tháng 9</option>
-                        <option value="10" <%=month==10 ? 'selected' : '' %>>Tháng 10</option>
-                        <option value="11" <%=month==11 ? 'selected' : '' %>>Tháng 11</option>
-                        <option value="12" <%=month==12 ? 'selected' : '' %>>Tháng 12</option>
+                    <label for="startMonth">Tháng Bắt Đầu:</label>
+                    <select name="startMonth" id="startMonth">
+                        <option value="1" <%=startMonth==1 ? 'selected' : '' %>>Tháng 1</option>
+                        <option value="2" <%=startMonth==2 ? 'selected' : '' %>>Tháng 2</option>
+                        <option value="3" <%=startMonth==3 ? 'selected' : '' %>>Tháng 3</option>
+                        <option value="4" <%=startMonth==4 ? 'selected' : '' %>>Tháng 4</option>
+                        <option value="5" <%=startMonth==5 ? 'selected' : '' %>>Tháng 5</option>
+                        <option value="6" <%=startMonth==6 ? 'selected' : '' %>>Tháng 6</option>
+                        <option value="7" <%=startMonth==7 ? 'selected' : '' %>>Tháng 7</option>
+                        <option value="8" <%=startMonth==8 ? 'selected' : '' %>>Tháng 8</option>
+                        <option value="9" <%=startMonth==9 ? 'selected' : '' %>>Tháng 9</option>
+                        <option value="10" <%=startMonth==10 ? 'selected' : '' %>>Tháng 10</option>
+                        <option value="11" <%=startMonth==11 ? 'selected' : '' %>>Tháng 11</option>
+                        <option value="12" <%=startMonth==12 ? 'selected' : '' %>>Tháng 12</option>
                     </select>
                 </div>
 
                 <div class="form-group">
-                    <label for="year">Năm:</label>
-                    <input type="number" id="year" name="year" value="<%= year || new Date().getFullYear() %>" required>
+                    <label for="startYear">Năm Bắt Đầu:</label>
+                    <input type="number" id="startYear" name="startYear"
+                        value="<%= startYear || new Date().getFullYear() %>" required>
+                </div>
+
+                <div class="form-group">
+                    <label for="endMonth">Tháng Kết Thúc:</label>
+                    <select name="endMonth" id="endMonth">
+                        <option value="1" <%=endMonth==1 ? 'selected' : '' %>>Tháng 1</option>
+                        <option value="2" <%=endMonth==2 ? 'selected' : '' %>>Tháng 2</option>
+                        <option value="3" <%=endMonth==3 ? 'selected' : '' %>>Tháng 3</option>
+                        <option value="4" <%=endMonth==4 ? 'selected' : '' %>>Tháng 4</option>
+                        <option value="5" <%=endMonth==5 ? 'selected' : '' %>>Tháng 5</option>
+                        <option value="6" <%=endMonth==6 ? 'selected' : '' %>>Tháng 6</option>
+                        <option value="7" <%=endMonth==7 ? 'selected' : '' %>>Tháng 7</option>
+                        <option value="8" <%=endMonth==8 ? 'selected' : '' %>>Tháng 8</option>
+                        <option value="9" <%=endMonth==9 ? 'selected' : '' %>>Tháng 9</option>
+                        <option value="10" <%=endMonth==10 ? 'selected' : '' %>>Tháng 10</option>
+                        <option value="11" <%=endMonth==11 ? 'selected' : '' %>>Tháng 11</option>
+                        <option value="12" <%=endMonth==12 ? 'selected' : '' %>>Tháng 12</option>
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label for="endYear">Năm Kết Thúc:</label>
+                    <input type="number" id="endYear" name="endYear" value="<%= endYear || new Date().getFullYear() %>"
+                        required>
                 </div>
 
                 <div class="form-actions">
-                    <button type="button" id="viewButton">Xem</button>
-                    <button type="button" id="exportButton">Xuất</button>
+                    <button type="button" id="viewaggregated">Xem</button>
                 </div>
             </form>
         </div>
@@ -120,10 +143,11 @@
             </div>
         </dialog>
 
-
-        <% if (month && year) { %>
+        <% if (startMonth && startYear && endMonth && endYear) { %>
             <div class="report-container">
-                <h2>Báo cáo cho <%= month %>/<%= year %>
+                <h2>Báo cáo tổng hợp từ
+                    <%= startMonth %>/<%= startYear %> đến
+                            <%= endMonth %>/<%= endYear %>
                 </h2>
 
                 <div class="submitted-reports">
@@ -217,24 +241,11 @@
                             </tfoot>
                         </table>
                         <% } else { %>
-                            <p>Không có báo cáo nào được gửi trong tháng này.</p>
+                            <p>Không có báo cáo nào trong khoảng thời gian đã chọn.</p>
                             <% } %>
                 </div>
 
-                <div class="users-without-reports">
-                    <h3>Người dùng không có báo cáo</h3>
-                    <% if (usersWithoutReports.length> 0) { %>
-                        <ul>
-                            <% usersWithoutReports.forEach(user=> { %>
-                                <li>
-                                    <%= user.name %> (<%= user.username %>)
-                                </li>
-                                <% }) %>
-                        </ul>
-                        <% } else { %>
-                            <p>Tất cả người dùng đã gửi báo cáo cho tháng này.</p>
-                            <% } %>
-                </div>
+
             </div>
             <% } else { %>
                 <p>Vui lòng chọn tháng và năm để xem báo cáo.</p>
@@ -242,7 +253,13 @@
 
     </div> <!-- End of container -->
     <!-- <script src="/js/dashboard.js"></script> -->
-    <script src="/js/viewReports.js"></script>
+    <script src="/js/aggregatedReports.js"></script>
+    <script>
+        document.getElementById('viewaggregated').addEventListener('click', function () {
+            document.getElementById('reportForm').action = "/reports/aggregated";
+            document.getElementById('reportForm').submit();
+        });
+    </script>
 </body>
 
 </html>

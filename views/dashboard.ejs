@@ -6,7 +6,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Trang Chủ</title>
     <link rel="stylesheet" href="/css/dashboard.css">
-</head>
+
 
 <body>
     <header>
@@ -26,7 +26,13 @@
             <% if (user.role==='admin' ) { %>
                 <li><a href="/add-user" class="nav-link">Thêm User</a></li>
                 <% } %>
-                    <li><a href="/reports/view" class="nav-link">Xem Báo Cáo</a></li>
+                    <li class="reports-menu">
+                        <a href="#" class="nav-link">Báo Cáo</a>
+                        <ul class="sub-menu">
+                            <li><a href="/reports/view" class="nav-link">Báo Cáo Tháng</a></li>
+                            <li><a href="/reports/aggregated" class="nav-link">Báo Cáo Tổng Hợp</a></li>
+                        </ul>
+                    </li>
                     <li><a href="/change-password" class="nav-link">Đổi mật khẩu</a></li>
                     <li><a href="/logout" class="logout-btn">Đăng xuất</a></li>
         </ul>
@@ -155,6 +161,14 @@
                     <p id="modifiedBy"></p>
                     <p id="modifiedAt"></p>
                     <ul id="modificationFields"></ul>
+                    <button id="closeDialog1">Đóng</button>
+                </div>
+            </dialog>
+            <!-- Hộp thoại thông báo lỗi -->
+            <dialog id="errDialog">
+                <div id="modificationDetails">
+                    <h2>Lỗi:</h2>
+                    <p id="error"></p>
                     <button id="closeDialog">Đóng</button>
                 </div>
             </dialog>
@@ -197,14 +211,16 @@
                                                                             <option value="" selected></option>
                                                                             <!-- Hiển thị "Không có sửa đổi" và chọn mặc định -->
                                                                             <% } else { %>
-                                                                                <option value="" selected>Chọn sửa đổi
+                                                                                <option value="" selected>Chọn
+                                                                                    sửa đổi
                                                                                 </option>
                                                                                 <% report.modifications.forEach((mod)=>
                                                                                     { %>
                                                                                     <option value="<%= mod._id %>">
                                                                                         <%= mod.modifiedBy ?
                                                                                             mod.modifiedBy.username
-                                                                                            : 'Unknown User' %> |
+                                                                                            : 'Unknown User' %>
+                                                                                            |
                                                                                             <%= mod.modifiedAt ? new
                                                                                                 Date(mod.modifiedAt).toLocaleString()
                                                                                                 : 'Unknown Date' %>
@@ -223,10 +239,6 @@
                                     Sửa
                                 </button>
 
-                                <!-- <button class="edit-btn"
-                                onclick="populateForm('<%= report._id %>', '<%= report.reportingUnit %>', '<%= report.month %>', '<%= report.year %>', '<%= report.totalVisits %>', '<%= report.childrenUnder14 %>', '<%= report.visitsWithIDExcludingChildren %>', '<%= report.birthCertificate %>', '<%= report.deathCertificate %>')">
-                                Sửa
-                            </button> -->
 
                                 <!-- Delete Button (Admin Only) -->
                                 <% if (user.role==='admin' ) { %>
@@ -247,157 +259,7 @@
         <p>© 2025 PHUOCNH. Tất cả các quyền được bảo lưu.</p>
         <p>Được phát triển bởi <a href="https://phuocnguyen.online" target="_blank">PHUOCNH</a>.</p>
     </footer>
-
-
-    <script>
-        function filterReports() {
-            const searchInput = document.getElementById("searchReports").value.toLowerCase();
-            const reportList = document.getElementById("reportList");
-            const reports = reportList.getElementsByTagName("li");
-
-            for (let i = 0; i < reports.length; i++) {
-                const reportText = reports[i].textContent.toLowerCase();
-                if (reportText.includes(searchInput)) {
-                    reports[i].style.display = "";
-                } else {
-                    reports[i].style.display = "none";
-                }
-            }
-        }
-
-        function openEditDialog(id, reportingUnit, month, year, totalVisits, childrenUnder14, visitsWithIDExcludingChildren, birthCertificate, deathCertificate) {
-            const dialog = document.getElementById('editDialog');
-            document.getElementById('editReportId').value = id;
-            document.getElementById('editReportingUnit').value = reportingUnit;
-            document.getElementById('editMonth').value = month;
-            document.getElementById('editYear').value = year;
-            document.getElementById('editTotalVisits').value = totalVisits;
-            document.getElementById('editChildrenUnder14').value = childrenUnder14;
-            document.getElementById('editVisitsWithIDExcludingChildren').value = visitsWithIDExcludingChildren;
-            document.getElementById('editBirthCertificate').value = birthCertificate;
-            document.getElementById('editDeathCertificate').value = deathCertificate;
-
-            // Thay đổi action của form
-            document.getElementById('editForm').action = '/reports/edit/' + id;
-
-            // Mở hộp thoại
-            dialog.showModal();
-        }
-
-        function closeDialog() {
-            const dialog = document.getElementById('editDialog');
-            dialog.close();
-        }
-
-        // Hàm để hiển thị chi tiết sửa đổi khi người dùng chọn một mục
-        // Hàm để hiển thị chi tiết sửa đổi khi người dùng chọn một mục
-        function showModificationDetails(selectElement) {
-            const modificationId = selectElement.value;
-
-            if (!modificationId) {
-                // Nếu không có lựa chọn, không thực hiện gì
-                return;
-            }
-
-            // Gửi yêu cầu AJAX để lấy thông tin chi tiết về sửa đổi
-            fetch(`/reports/view-modification/${modificationId}`)
-                .then(response => {
-                    // Kiểm tra xem mã trạng thái HTTP có phải là 200 không
-                    if (!response.ok) {
-                        throw new Error(`Lỗi: ${response.statusText}`);
-                    }
-
-                    // Kiểm tra xem Content-Type có phải là JSON không
-                    const contentType = response.headers.get("Content-Type");
-
-                    if (contentType && contentType.includes("application/json")) {
-                        // Nếu là JSON, chuyển đổi phản hồi thành JSON
-                        return response.json();
-                    } else {
-                        // Nếu không phải JSON, trả về lỗi
-                        throw new Error("Dữ liệu trả về không phải định dạng JSON");
-                    }
-                })
-                .then(data => {
-                    // Xử lý dữ liệu JSON nếu có
-                    if (data.error) {
-                        alert(data.error);  // Hiển thị thông báo lỗi từ server
-                    } else {
-                        // Cập nhật thông tin sửa đổi
-                        document.getElementById('modifiedBy').innerText = `Người sửa: ${data.modifiedBy || 'Không xác định'}`;
-                        document.getElementById('modifiedAt').innerText = `Thời gian sửa: ${data.modifiedAt ? new Date(data.modifiedAt).toLocaleString() : 'Không xác định'}`;
-
-                        const modificationFields = document.getElementById('modificationFields');
-                        modificationFields.innerHTML = '';  // Xóa danh sách cũ
-
-                        // Kiểm tra xem có dữ liệu sửa đổi không và xử lý
-                        if (data.modificationsDetails && data.modificationsDetails.length > 0) {
-                            data.modificationsDetails.forEach(detail => {
-                                const li = document.createElement('li');
-                                li.textContent = `${detail.field}: ${detail.oldValue} => ${detail.newValue}`;
-                                modificationFields.appendChild(li);
-                            });
-                        } else {
-                            // Nếu không có sửa đổi thực sự, hiển thị thông báo
-                            modificationFields.innerHTML = '<li>Không có thay đổi thực sự.</li>';
-                        }
-
-                        // Mở hộp thoại
-                        const dialog = document.getElementById('editDialog1');
-                        dialog.showModal();
-                    }
-                })
-                .catch(error => {
-                    console.error('Lỗi khi lấy thông tin sửa đổi:', error);
-                    alert('Không thể tải thông tin sửa đổi: ' + error.message);
-                });
-        }
-
-        // Đóng hộp thoại khi nhấn vào nút "Đóng"
-        document.getElementById('closeDialog').addEventListener('click', function () {
-            const dialog = document.getElementById('editDialog1');
-            dialog.close();
-        });
-        // JavaScript for handling edit and delete actions
-        function deleteReport(reportId) {
-            fetch(`/reports/delete/${reportId}`, {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-                credentials: 'same-origin' // Ensure session cookies are sent
-            })
-                .then(response => {
-                    if (response.ok) {
-                        alert('Report deleted successfully');
-                        window.location.href = '/dashboard'; // Redirect to dashboard after successful deletion
-                    } else {
-                        return response.text().then(text => { throw new Error(text) });
-                    }
-                })
-                .catch(error => {
-                    alert('Error: ' + error.message);
-                });
-        }
-
-        // Populate form with report data for editing
-        function populateForm(id, reportingUnit, month, year, totalVisits, childrenUnder14, visitsWithIDExcludingChildren, birthCertificate, deathCertificate) {
-            document.getElementById('reportId').value = id;
-            document.getElementById('reportingUnit').value = reportingUnit;
-            document.getElementById('monthin').value = month;
-            document.getElementById('yearin').value = year;
-            document.getElementById('totalVisits').value = totalVisits;
-            document.getElementById('childrenUnder14').value = childrenUnder14;
-            document.getElementById('visitsWithIDExcludingChildren').value = visitsWithIDExcludingChildren;
-            document.getElementById('birthCertificate').value = birthCertificate;
-            document.getElementById('deathCertificate').value = deathCertificate;
-
-            // Change the form's action to edit with the specific report ID
-            document.getElementById('reportForm').action = '/reports/edit/' + id;
-        }
-    </script>
-
-
+    <script src="/js/dashboard.js"></script>
 
 </body>
 
