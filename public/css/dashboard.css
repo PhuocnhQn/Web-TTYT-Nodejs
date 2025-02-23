@@ -42,6 +42,7 @@ nav ul {
 
 nav ul li {
     margin: 0 15px;
+    position: relative;
 }
 
 nav ul li a {
@@ -55,6 +56,64 @@ nav ul li a {
 nav ul li a:hover {
     background-color: #0066cc;
 }
+
+/* Submenu styles */
+.reports-menu .sub-menu {
+    display: none;
+    position: absolute;
+    top: 100%;
+    /* Align with the parent bottom*/
+    left: 0;
+    background-color: #004b87;
+    padding: 10px;
+    border-radius: 4px;
+    z-index: 100;
+    /* Ensure submenu appears on top*/
+    flex-direction: column;
+    /* Align the list items in a column*/
+}
+
+.reports-menu:hover .sub-menu {
+    display: flex;
+}
+
+.reports-menu .sub-menu li {
+    margin: 0;
+    /* Remove margin for better menu control */
+}
+
+.reports-menu .sub-menu li a {
+    display: block;
+    /* Ensure that the link takes the whole width*/
+    padding: 8px 12px;
+    border-radius: 4px;
+    transition: background-color 0.3s ease;
+    white-space: nowrap;
+    /* Prevent text from wrapping */
+    overflow: hidden;
+    /* Hide overflowing text */
+    text-overflow: ellipsis;
+    /* Show an ellipsis if the text is cut */
+}
+
+
+.reports-menu:hover .sub-menu {
+    display: flex;
+}
+
+.reports-menu .sub-menu li {
+    margin: 0;
+    /* Remove margin for better menu control */
+}
+
+.reports-menu .sub-menu li a {
+    display: block;
+    /* Ensure that the link takes the whole width*/
+    padding: 8px 12px;
+    border-radius: 4px;
+    transition: background-color 0.3s ease;
+}
+
 
 @media (max-width: 768px) {
     nav ul {
@@ -310,4 +369,114 @@ footer a:hover {
         gap: 10px;
         /* Khoảng cách giữa các phần tử */
     }
+}
+
+/* Include your CSS for dialog from previous answer */
+dialog {
+    border: none;
+    border-radius: 8px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+    padding: 20px;
+    max-width: 500px;
+    /* Adjust as needed */
+    margin: auto;
+    /* Center the dialog */
+}
+
+dialog::backdrop {
+    background-color: rgba(0, 0, 0, 0.5);
+}
+
+#modificationDetails h2 {
+    color: #dc3545;
+}
+
+#closeDialog {
+    background-color: #007bff;
+    color: white;
+    padding: 10px 15px;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    align-self: flex-end;
+    /* Align button to the bottom right */
+    transition: background-color 0.3s ease;
+}
+
+#closeDialog:hover {
+    background-color: #0056b3;
+}
+
+.error-message {
+    color: #dc3545;
+}
+
+.warning-message {
+    color: #000000;
+}
+
+/* Thiết lập dialog (hộp thoại) */
+#successfullyDialog,
+#errDialog,
+#confirmDialog {
+    border: none;
+    border-radius: 10px;
+    padding: 20px;
+    background: rgba(255, 255, 255, 0.95);
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+    width: 350px;
+    text-align: center;
+    font-family: Arial, sans-serif;
+    transition: transform 0.3s ease-out, opacity 0.3s ease-out;
+}
+
+/* Khi hộp thoại hiển thị */
+#successfullyDialog[open],
+#confirmDialog[open] {
+    transform: scale(1);
+    opacity: 1;
+}
+
+/* Ẩn hộp thoại khi đóng */
+#successfullyDialog:not([open]),
+#confirmDialog:not([open]) {
+    transform: scale(0.9);
+    opacity: 0;
+}
+
+
+/* Tiêu đề */
+.notification h2,
+.modificationDetails {
+    font-size: 18px;
+    margin: 0;
+    font-weight: bold;
+}
+
+/* Nội dung thông báo */
+#notificationSS,
+#error {
+    font-size: 16px;
+    margin: 10px 0;
+}
+
+/* Nút đóng */
+#closeDialogSS,
+#confirmYes,
+#confirmNo {
+    background-color: #007bff;
+    color: white;
+    border: none;
+    padding: 8px 15px;
+    font-size: 14px;
+    border-radius: 5px;
+    cursor: pointer;
+    margin-top: 10px;
+    transition: background 0.2s ease-in-out;
+}
+
+#closeDialogSS:hover,
+#confirmYes:hover,
+#confirmNo:hover {
+    background-color: #0056b3;
 }
