@@ -480,3 +480,13 @@ dialog::backdrop {
 #confirmNo:hover {
     background-color: #0056b3;
 }
+
+.edit-note {
+    color: red;
+    font-weight: bold;
+    white-space: nowrap;
+    overflow: hidden;
+    display: block;
+    width: 100%;
+    animation: marquee 10s linear infinite;
+}

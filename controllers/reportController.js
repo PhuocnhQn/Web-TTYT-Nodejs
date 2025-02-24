@@ -23,29 +23,40 @@ const addOrEditReport = async (req, res) => {
         const isWithinEditPeriod = (reportYear, reportMonth) => {
             reportYear = Number(reportYear);
             reportMonth = Number(reportMonth);
+            const currentDate = new Date();
+            const currentYear = currentDate.getFullYear();
+            const currentMonth = currentDate.getMonth() + 1;
+            const currentDay = currentDate.getDate();
 
             if (currentYear < reportYear) {
-                return true;
+                return { isAllowed: true, message: "Báo cáo thuộc năm tương lai, có thể chỉnh sửa." };
             }
 
             if (currentYear === reportYear) {
                 if (currentMonth < reportMonth) {
-                    return true;
+                    return { isAllowed: true, message: "Báo cáo thuộc tháng tương lai, có thể chỉnh sửa." };
                 }
-                if (currentMonth === reportMonth && currentDay <= 6) {
-                    return true;
+                if (currentMonth === reportMonth && currentDay <= 5) {
+                    return { isAllowed: true, message: "Báo cáo thuộc tháng hiện tại và trong thời gian chỉnh sửa (trước ngày 7)." };
                 }
             }
 
-            return false;
+            return { isAllowed: false, message: `Không thể thêm báo cáo cho tháng ${reportMonth}/${reportYear} vì đã quá hạn.` };
         };
+
         //kiểm tra xem có trong kỳ hạn chỉnh sửa không
-        if (!isWithinEditPeriod(year, month)) {
+        const editCheck = isWithinEditPeriod(year, month);
+        if (!editCheck.isAllowed) {
             return res.status(400).json({
-                error: { message: 'Không thể gửi báo cáo cho tháng năm trước và sau ngày 6 hàng tháng.', type: 'server' },
+                error: {
+                    message: editCheck.message, // Chỉ trả về thông báo khi không được phép chỉnh sửa
+                    type: 'server'
+                },
                 serverError: true
             });
         }
+
+
         // Tính tỷ lệ phần trăm
         const totalVisitsExcludingChildren = totalVisits - childrenUnder14;
         const percentage = totalVisitsExcludingChildren > 0 ?
@@ -133,30 +144,38 @@ const editReport = async (req, res) => {
         const currentMonth = currentDate.getMonth() + 1; // Lấy tháng hiện tại
         const currentYear = currentDate.getFullYear(); // Lấy năm hiện tại
         const currentDay = (currentDate.getDate());
-        // So sánh tháng và năm báo cáo với tháng/năm hiện tại
         const isWithinEditPeriod = (reportYear, reportMonth) => {
             reportYear = Number(reportYear);
             reportMonth = Number(reportMonth);
+            const currentDate = new Date();
+            const currentYear = currentDate.getFullYear();
+            const currentMonth = currentDate.getMonth() + 1;
+            const currentDay = currentDate.getDate();
 
             if (currentYear < reportYear) {
-                return true;
+                return { isAllowed: true, message: "Báo cáo thuộc năm tương lai, có thể chỉnh sửa." };
             }
 
             if (currentYear === reportYear) {
                 if (currentMonth < reportMonth) {
-                    return true;
+                    return { isAllowed: true, message: "Báo cáo thuộc tháng tương lai, có thể chỉnh sửa." };
                 }
-                if (currentMonth === reportMonth && currentDay <= 6) {
-                    return true;
+                if (currentMonth === reportMonth && currentDay <= 5) {
+                    return { isAllowed: true, message: "Báo cáo thuộc tháng hiện tại và trong thời gian chỉnh sửa (trước ngày 6)." };
                 }
             }
 
-            return false;
+            return { isAllowed: false, message: `Không thể chỉnh sửa báo cáo cho tháng ${reportMonth}/${reportYear} vì đã quá hạn.` };
         };
-        // Nếu không phải admin, kiểm tra xem có trong kỳ hạn chỉnh sửa không
-        if (req.session.role !== 'admin' && !isWithinEditPeriod(year, month)) {
+
+        //kiểm tra xem có trong kỳ hạn chỉnh sửa không
+        const editCheck = isWithinEditPeriod(year, month);
+        if (req.session.role !== 'admin' && !editCheck.isAllowed) {
             return res.status(400).json({
-                error: { message: 'Không thể lưu báo cáo cho tháng năm trước.', type: 'server' },
+                error: {
+                    message: editCheck.message, // Chỉ trả về thông báo khi không được phép chỉnh sửa
+                    type: 'server'
+                },
                 serverError: true
             });
         }
