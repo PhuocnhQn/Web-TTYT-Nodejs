@@ -170,7 +170,7 @@ async function openEditDialog(id, reportingUnit, month, year, totalVisits, child
             if (currentMonth < reportMonth) {
                 return true;
             }
-            if (currentMonth === reportMonth && currentDay <= 6) {
+            if (currentMonth === reportMonth && currentDay <= 5) {
                 return true;
             }
         }
@@ -181,7 +181,7 @@ async function openEditDialog(id, reportingUnit, month, year, totalVisits, child
     // Kiểm tra quyền chỉnh sửa
     if (!isAdmin && !isWithinEditPeriod(year, month)) {
         showDialog({
-            message: `Bạn không thể sửa báo cáo sau ngày 6 tháng ${month} Năm ${year}`,
+            message: `Bạn không thể sửa báo cáo sau 5/${month}/${year}`,
             type: 'client'
         });
         return; // Dừng thực hiện

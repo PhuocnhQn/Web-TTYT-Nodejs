@@ -481,6 +481,26 @@ dialog::backdrop {
     background-color: #0056b3;
 }
 
+/* Ẩn thanh trượt trong dialog */
+#editDialog {
+    overflow: hidden;
+}
+
+/* CSS cho phần lưu ý trong bảng sửa đổi */
+@keyframes marquee {
+    0% {
+        transform: translateX(100%);
+    }
+
+    100% {
+        transform: translateX(-100%);
+    }
+}
+
+#editDialog:not([open]) .edit-note {
+    display: none;
+}
+
 .edit-note {
     color: red;
     font-weight: bold;
@@ -489,4 +509,17 @@ dialog::backdrop {
     display: block;
     width: 100%;
     animation: marquee 10s linear infinite;
+}
+
+/* Ẩn thanh cuộn ngang và dọc trong toàn bộ dialog */
+#editDialog::-webkit-scrollbar {
+    display: none;
+    /* Chrome, Safari */
+}
+
+#editDialog {
+    -ms-overflow-style: none;
+    /* IE, Edge */
+    scrollbar-width: none;
+    /* Firefox */
 }

@@ -224,10 +224,12 @@
                 <div class="users-without-reports">
                     <h3>Người dùng không có báo cáo</h3>
                     <% if (usersWithoutReports.length> 0) { %>
+                        <p>Số lượng: <%= usersWithoutReports.length %>
+                        </p>
                         <ul>
                             <% usersWithoutReports.forEach(user=> { %>
                                 <li>
-                                    <%= user.name %> (<%= user.username %>)
+                                    <%= user.name %>
                                 </li>
                                 <% }) %>
                         </ul>

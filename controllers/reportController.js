@@ -37,7 +37,7 @@ const addOrEditReport = async (req, res) => {
                     return { isAllowed: true, message: "Báo cáo thuộc tháng tương lai, có thể chỉnh sửa." };
                 }
                 if (currentMonth === reportMonth && currentDay <= 5) {
-                    return { isAllowed: true, message: "Báo cáo thuộc tháng hiện tại và trong thời gian chỉnh sửa (trước ngày 7)." };
+                    return { isAllowed: true, message: "Báo cáo thuộc tháng hiện tại và trong thời gian chỉnh sửa (trước ngày 6)." };
                 }
             }
 
@@ -46,7 +46,7 @@ const addOrEditReport = async (req, res) => {
 
         //kiểm tra xem có trong kỳ hạn chỉnh sửa không
         const editCheck = isWithinEditPeriod(year, month);
-        if (!editCheck.isAllowed) {
+        if (req.session.role !== 'admin' && !editCheck.isAllowed) {
             return res.status(400).json({
                 error: {
                     message: editCheck.message, // Chỉ trả về thông báo khi không được phép chỉnh sửa
@@ -165,7 +165,7 @@ const editReport = async (req, res) => {
                 }
             }
 
-            return { isAllowed: false, message: `Không thể chỉnh sửa báo cáo cho tháng ${reportMonth}/${reportYear} vì đã quá hạn.` };
+            return { isAllowed: false, message: `Không thể lưu báo cáo cho tháng ${reportMonth}/${reportYear} vì đã quá hạn.` };
         };
 
         //kiểm tra xem có trong kỳ hạn chỉnh sửa không
