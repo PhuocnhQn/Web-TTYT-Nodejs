@@ -72,5 +72,32 @@ const changePassword = async (req, res) => {
     }
 };
 
+// Kiểm tra xem người dùng có phải là admin không
+const isAdmin = async (userId) => {
+    try {
+        const user = await User.findById(userId);
+        return user && user.role === 'admin';
+    } catch (error) {
+        console.error('Lỗi khi kiểm tra quyền admin:', error);
+        return false;
+    }
+};
 
-module.exports = { login, logout, changePassword, renderChangePassword };
+// Kiểm tra xem ngày hiện tại có nằm trong khoảng thời gian chỉnh sửa không
+const isWithinEditPeriod = (reportYear, reportMonth) => {
+    const today = new Date();
+    const currentYear = today.getFullYear();
+    const currentMonth = today.getMonth() + 1;
+    const currentDay = today.getDate();
+
+    // Nếu tháng hiện tại < tháng báo cáo thì luôn cho phép sửa
+    if (currentYear === reportYear && currentMonth < reportMonth) {
+        return true;
+    }
+
+    // Nếu tháng hiện tại = tháng báo cáo thì kiểm tra ngày
+    return currentYear === reportYear && currentMonth === reportMonth && currentDay <= 6;
+};
+
+
+module.exports = { login, logout, changePassword, renderChangePassword, isAdmin, isWithinEditPeriod };

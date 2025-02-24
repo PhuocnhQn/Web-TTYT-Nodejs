@@ -4,96 +4,78 @@ const reportService = require('../services/reportService');
 const path = require('path');
 const fs = require('fs');
 const xlsx = require("xlsx");
+
 const addOrEditReport = async (req, res) => {
     try {
         const { reportId, totalVisits, childrenUnder14, visitsWithIDExcludingChildren, reportingUnit, month, year, birthCertificate, deathCertificate } = req.body;
 
-        // Calculate the percentage
+        // Kiểm tra xem tháng và năm đã tồn tại trong cơ sở dữ liệu chưa
+        const existingReport = await Report.findOne({ month, year, userId: req.session.userId });
+        if (existingReport && !reportId) {
+            return res.status(400).json({ error: { message: `Đã có báo cáo cho tháng ${month} năm ${year}. Không thể thêm báo cáo mới.`, type: 'server' }, serverError: true });
+        }
+        // Kiểm tra xem báo cáo có tháng và năm nhỏ hơn tháng hiện tại không
+        const currentDate = new Date();
+        const currentMonth = currentDate.getMonth() + 1; // Lấy tháng hiện tại
+        const currentYear = currentDate.getFullYear(); // Lấy năm hiện tại
+        const currentDay = (currentDate.getDate());
+        // So sánh tháng và năm báo cáo với tháng/năm hiện tại
+        const isWithinEditPeriod = (reportYear, reportMonth) => {
+            reportYear = Number(reportYear);
+            reportMonth = Number(reportMonth);
+
+            if (currentYear < reportYear) {
+                return true;
+            }
+
+            if (currentYear === reportYear) {
+                if (currentMonth < reportMonth) {
+                    return true;
+                }
+                if (currentMonth === reportMonth && currentDay <= 6) {
+                    return true;
+                }
+            }
+
+            return false;
+        };
+        //kiểm tra xem có trong kỳ hạn chỉnh sửa không
+        if (!isWithinEditPeriod(year, month)) {
+            return res.status(400).json({
+                error: { message: 'Không thể gửi báo cáo cho tháng năm trước và sau ngày 6 hàng tháng.', type: 'server' },
+                serverError: true
+            });
+        }
+        // Tính tỷ lệ phần trăm
         const totalVisitsExcludingChildren = totalVisits - childrenUnder14;
         const percentage = totalVisitsExcludingChildren > 0 ?
             ((visitsWithIDExcludingChildren / totalVisitsExcludingChildren) * 100).toFixed(2) :
             0;
 
-        if (reportId) {
-            // Update existing report
-            const report = await Report.findOne({ _id: reportId, userId: req.session.userId });
-            if (!report) return res.status(404).json({ error: { message: 'Report not found', type: 'server' }, serverError: true });
+        // Thêm báo cáo mới
+        const report = new Report({
+            userId: req.session.userId,
+            totalVisits,
+            childrenUnder14,
+            visitsWithIDExcludingChildren,
+            reportingUnit,
+            month,
+            year,
+            birthCertificate,
+            deathCertificate,
+            percentage,  // Thêm tỷ lệ phần trăm cho báo cáo mới
+        });
+        await report.save();
+        // }
 
-            // Initialize modifications details array
-            let modificationsDetails = [];
-
-            // Check for changes and add modifications details
-            if (totalVisits && totalVisits !== report.totalVisits) {
-                modificationsDetails.push({ field: 'Tổng lượt KCB', oldValue: report.totalVisits, newValue: totalVisits });
-                report.totalVisits = totalVisits;
-            }
-            if (childrenUnder14 && childrenUnder14 !== report.childrenUnder14) {
-                modificationsDetails.push({ field: 'Trẻ em dưới 14 tuổi', oldValue: report.childrenUnder14, newValue: childrenUnder14 });
-                report.childrenUnder14 = childrenUnder14;
-            }
-            if (visitsWithIDExcludingChildren && visitsWithIDExcludingChildren !== report.visitsWithIDExcludingChildren) {
-                modificationsDetails.push({ field: 'Khám có CCCD (Không bao gồm trẻ em)', oldValue: report.visitsWithIDExcludingChildren, newValue: visitsWithIDExcludingChildren });
-                report.visitsWithIDExcludingChildren = visitsWithIDExcludingChildren;
-            }
-            if (reportingUnit && reportingUnit !== report.reportingUnit) {
-                modificationsDetails.push({ field: 'Đơn vị', oldValue: report.reportingUnit, newValue: reportingUnit });
-                report.reportingUnit = reportingUnit;
-            }
-            if (month && month !== report.month) {
-                modificationsDetails.push({ field: 'Tháng', oldValue: report.month, newValue: month });
-                report.month = month;
-            }
-            if (year && year !== report.year) {
-                modificationsDetails.push({ field: 'Năm', oldValue: report.year, newValue: year });
-                report.year = year;
-            }
-            if (birthCertificate && birthCertificate !== report.birthCertificate) {
-                modificationsDetails.push({ field: 'Giấy chứng sinh', oldValue: report.birthCertificate, newValue: birthCertificate });
-                report.birthCertificate = birthCertificate;
-            }
-            if (deathCertificate && deathCertificate !== report.deathCertificate) {
-                modificationsDetails.push({ field: 'Giấy chứng tử', oldValue: report.deathCertificate, newValue: deathCertificate });
-                report.deathCertificate = deathCertificate;
-            }
-
-            // Recalculate the percentage if necessary
-            if (modificationsDetails.length > 0 || percentage !== report.percentage) {
-                report.percentage = percentage;
-            }
-
-            // Add the modification details with who modified it and when
-            if (modificationsDetails.length > 0) {
-                report.modifications.push({
-                    modifiedBy: req.session.userId,
-                    modifiedAt: new Date(),
-                    modificationsDetails
-                });
-            }
-
-            await report.save();
-        } else {
-            // Add a new report
-            const report = new Report({
-                userId: req.session.userId,
-                totalVisits,
-                childrenUnder14,
-                visitsWithIDExcludingChildren,
-                reportingUnit,
-                month,
-                year,
-                birthCertificate,
-                deathCertificate,
-                percentage,  // Add the percentage to the new report
-            });
-            await report.save();
-        }
-
-        res.redirect('/dashboard');
+        // res.redirect('/dashboard');
+        return res.json({ message: 'Gửi báo cáo thành công!', success: true });
     } catch (error) {
         console.error("Error in addOrEditReport:", error);
         res.status(400).json({ error: { message: error.message, type: 'server' }, serverError: true });
     }
 };
+
 
 // Delete a report
 const deleteReport = async (req, res) => {
@@ -119,66 +101,84 @@ const deleteReport = async (req, res) => {
 };
 
 // Edit a report
+
 const editReport = async (req, res) => {
     try {
-        if (!req.session.userId) return res.status(401).json({ error: { message: 'Please log in', type: 'server' }, serverError: true });
+        if (!req.session.userId) {
+            return res.status(401).json({ error: { message: 'Please log in', type: 'server' }, serverError: true });
+        }
 
         const reportId = req.params.id;
         const { totalVisits, childrenUnder14, visitsWithIDExcludingChildren, reportingUnit, month, year, birthCertificate, deathCertificate } = req.body;
 
-        // Find the report by ID
+        // Tìm báo cáo theo ID
         const report = await Report.findById(reportId);
+        if (!report) {
+            return res.status(404).json({ error: { message: 'Report not found', type: 'server' }, serverError: true });
+        }
 
-        // Check if report exists
-        if (!report) return res.status(404).json({ error: { message: 'Report not found', type: 'server' }, serverError: true });
+        // Kiểm tra xem có báo cáo nào khác cùng tháng/năm không
+        const existingReport = await Report.findOne({
+            month,
+            year,
+            userId: req.session.userId,
+            _id: { $ne: reportId } // Loại trừ chính báo cáo đang chỉnh sửa (nếu có)
+        });
+        if (existingReport) {
+            return res.status(400).json({ error: { message: ' Không thể lưu. Đã có báo cáo cho tháng và năm này.', type: 'server' }, serverError: true });
+        }
 
-        // Admin can edit any report, users can only edit their own
+        // Kiểm tra xem báo cáo có tháng và năm nhỏ hơn tháng hiện tại không
+        const currentDate = new Date();
+        const currentMonth = currentDate.getMonth() + 1; // Lấy tháng hiện tại
+        const currentYear = currentDate.getFullYear(); // Lấy năm hiện tại
+        const currentDay = (currentDate.getDate());
+        // So sánh tháng và năm báo cáo với tháng/năm hiện tại
+        const isWithinEditPeriod = (reportYear, reportMonth) => {
+            reportYear = Number(reportYear);
+            reportMonth = Number(reportMonth);
+
+            if (currentYear < reportYear) {
+                return true;
+            }
+
+            if (currentYear === reportYear) {
+                if (currentMonth < reportMonth) {
+                    return true;
+                }
+                if (currentMonth === reportMonth && currentDay <= 6) {
+                    return true;
+                }
+            }
+
+            return false;
+        };
+        // Nếu không phải admin, kiểm tra xem có trong kỳ hạn chỉnh sửa không
+        if (req.session.role !== 'admin' && !isWithinEditPeriod(year, month)) {
+            return res.status(400).json({
+                error: { message: 'Không thể lưu báo cáo cho tháng năm trước.', type: 'server' },
+                serverError: true
+            });
+        }
+        // Admin có thể chỉnh sửa bất cứ lúc nào, User chỉ có thể sửa báo cáo của chính họ
         if (req.session.role === 'admin' || report.userId.toString() === req.session.userId.toString()) {
-            // Create an array to hold the modifications details
             let modificationsDetails = [];
-
-            // Check and record the changes
-            if (totalVisits && totalVisits !== report.totalVisits) {
-                modificationsDetails.push({ field: 'Tổng lượt KCB', oldValue: report.totalVisits, newValue: totalVisits });
-                report.totalVisits = totalVisits;
-            }
-            if (childrenUnder14 && childrenUnder14 !== report.childrenUnder14) {
-                modificationsDetails.push({ field: 'Trẻ em dưới 14 tuổi', oldValue: report.childrenUnder14, newValue: childrenUnder14 });
-                report.childrenUnder14 = childrenUnder14;
-            }
-            if (visitsWithIDExcludingChildren && visitsWithIDExcludingChildren !== report.visitsWithIDExcludingChildren) {
-                modificationsDetails.push({ field: 'Khám có CCCD (Không bao gồm trẻ em)', oldValue: report.visitsWithIDExcludingChildren, newValue: visitsWithIDExcludingChildren });
-                report.visitsWithIDExcludingChildren = visitsWithIDExcludingChildren;
-            }
-            if (reportingUnit && reportingUnit !== report.reportingUnit) {
-                modificationsDetails.push({ field: 'Đơn vị', oldValue: report.reportingUnit, newValue: reportingUnit });
-                report.reportingUnit = reportingUnit;
-            }
-            if (month && month !== report.month) {
-                modificationsDetails.push({ field: 'Tháng', oldValue: report.month, newValue: month });
-                report.month = month;
-            }
-            if (year && year !== report.year) {
-                modificationsDetails.push({ field: 'Năm', oldValue: report.year, newValue: year });
-                report.year = year;
-            }
-            if (birthCertificate && birthCertificate !== report.birthCertificate) {
-                modificationsDetails.push({ field: 'Giấy chứng sinh', oldValue: report.birthCertificate, newValue: birthCertificate });
-                report.birthCertificate = birthCertificate;
-            }
-            if (deathCertificate && deathCertificate !== report.deathCertificate) {
-                modificationsDetails.push({ field: 'Giấy chứng tử', oldValue: report.deathCertificate, newValue: deathCertificate });
-                report.deathCertificate = deathCertificate;
-            }
+            // Kiểm tra các trường thay đổi
+            const fieldsToUpdate = { totalVisits, childrenUnder14, visitsWithIDExcludingChildren, reportingUnit, month, year, birthCertificate, deathCertificate };
+            Object.keys(fieldsToUpdate).forEach(field => {
+                if (fieldsToUpdate[field] !== undefined && fieldsToUpdate[field] !== report[field]) {
+                    modificationsDetails.push({ field, oldValue: report[field], newValue: fieldsToUpdate[field] });
+                    report[field] = fieldsToUpdate[field];
+                }
+            });
 
             // Nếu có thay đổi, tính lại tỷ lệ phần trăm
             if (totalVisits && childrenUnder14 && visitsWithIDExcludingChildren) {
                 const totalVisitsExcludingChildren = totalVisits - childrenUnder14;
-                const percentage = totalVisitsExcludingChildren > 0 ? ((visitsWithIDExcludingChildren / totalVisitsExcludingChildren) * 100).toFixed(2) : 0;
-                report.percentage = percentage || report.percentage; // Set the recalculated percentage only if needed
+                report.percentage = totalVisitsExcludingChildren > 0 ? ((visitsWithIDExcludingChildren / totalVisitsExcludingChildren) * 100).toFixed(2) : 0;
             }
 
-            // Add the modification details with who modified it and when
+            // Nếu có chỉnh sửa, thêm vào lịch sử sửa đổi
             if (modificationsDetails.length > 0) {
                 report.modifications.push({
                     modifiedBy: req.session.userId,
@@ -188,15 +188,19 @@ const editReport = async (req, res) => {
                 });
                 await report.save();
             }
-            res.redirect('/dashboard');
+
+            // res.redirect('/dashboard');
+            return res.json({ message: 'Báo cáo đã được cập nhật thành công!', success: true });
         } else {
-            res.status(403).json({ error: { message: 'You do not have permission to edit this report', type: 'server' }, serverError: true })
+            res.status(403).json({ error: { message: 'Bạn không có quyền chỉnh sửa báo cáo này', type: 'server' }, serverError: true });
         }
     } catch (error) {
         console.error("Error in editReport:", error);
         res.status(500).json({ error: { message: error.message, type: 'server' }, serverError: true });
     }
 };
+
+
 
 // Route để lấy thông tin sửa đổi chi tiết
 const viewReportDetail = async (req, res) => {

@@ -1,5 +1,6 @@
 const User = require('../models/user');
 const Report = require('../models/report');
+
 const dashboard = async (req, res) => {
     try {
         const user = await User.findById(req.session.userId);
@@ -21,4 +22,16 @@ const dashboard = async (req, res) => {
         res.status(500).json({ error: 'Unable to load dashboard', serverError: true });
     }
 };
-module.exports = { dashboard }
+// Server Time route handler
+const serverTime = async (req, res) => {
+    try {
+        // Get current server time
+        const currentTime = new Date();
+        res.json({ time: currentTime });
+    } catch (error) {
+        // Return error if something goes wrong
+        res.status(500).json({ error: 'Unable to fetch server time', serverError: true });
+    }
+};
+
+module.exports = { dashboard, serverTime };

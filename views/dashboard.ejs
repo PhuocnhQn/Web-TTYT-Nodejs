@@ -44,7 +44,7 @@
             <h2>Báo cáo của bạn</h2>
             <!-- Form to Add/Edit a Report -->
 
-            <form id="reportForm" action="/reports/add" method="POST">
+            <form id="reportForm" method="POST">
                 <input type="hidden" id="reportId" name="reportId">
                 <div class="form-colum">
                     <div class="form-row">
@@ -101,7 +101,7 @@
                 <!-- Form to Upload the Excel File -->
                 <form id="uploadForm" action="/reports/upload" method="POST" enctype="multipart/form-data">
                     <div class="form-group">
-                        <label for="excelFile">Choose Excel File:</label>
+                        <label for="excelFile">Chọn tập tin Excel:</label>
                     </div>
                     <div class="form-group">
                         <input type="file" id="excelFile" name="excelFile" accept=".xlsx, .xls" required><br><br>
@@ -158,7 +158,7 @@
                     </div>
 
                     <div class="dialog-actions">
-                        <button type="submit">Lưu</button>
+                        <button id="bntEdit" type="submit">Lưu</button>
                         <button type="button" onclick="closeDialog()">Hủy</button>
                     </div>
                 </form>
@@ -171,7 +171,7 @@
         <section>
             <h2>Danh sách báo cáo</h2>
             <!-- Hộp thoại chi tiết sửa đổi -->
-            <dialog id="editDialog1">
+            <dialog id="listReportDialog">
                 <div id="modificationDetails" style="margin-top: 20px;">
                     <h2>Chi tiết sửa đổi:</h2>
                     <p id="modifiedBy"></p>
@@ -265,7 +265,7 @@
                             <div class="action-buttons">
                                 <!-- Edit Button -->
                                 <button class="edit-btn"
-                                    onclick="openEditDialog('<%= report._id %>', '<%= report.reportingUnit %>', '<%= report.month %>', '<%= report.year %>', '<%= report.totalVisits %>', '<%= report.childrenUnder14 %>', '<%= report.visitsWithIDExcludingChildren %>', '<%= report.birthCertificate %>', '<%= report.deathCertificate %>')">
+                                    onclick="openEditDialog('<%= report._id %>', '<%= report.reportingUnit %>', '<%= report.month %>', '<%= report.year %>', '<%= report.totalVisits %>', '<%= report.childrenUnder14 %>', '<%= report.visitsWithIDExcludingChildren %>', '<%= report.birthCertificate %>', '<%= report.deathCertificate %>','<%= user.role %>', '<%= report.createdAt %>')">
                                     Sửa
                                 </button>
 
