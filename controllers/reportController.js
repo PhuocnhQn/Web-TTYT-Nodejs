@@ -1,6 +1,7 @@
 const Report = require('../models/report');
 const User = require('../models/user');
 const reportService = require('../services/reportService');
+const ExcelJS = require('exceljs');
 const path = require('path');
 const fs = require('fs');
 const xlsx = require("xlsx");
@@ -365,10 +366,10 @@ const exportReports = async (req, res) => {
         // Tạo workbook và worksheet mới
         const workbook = new ExcelJS.Workbook();
         const worksheet = workbook.addWorksheet('Reports');
-
+        let stt = 1;
         // Đặt tiêu đề cột cho file Excel
         worksheet.columns = [
-            { header: 'Report ID', key: 'reportId', width: 20 },
+            { header: 'STT', key: 'stt', width: 20 },
             // { header: 'User', key: 'user', width: 30 },
             { header: 'Tháng', key: 'month', width: 10 },
             { header: 'Năm', key: 'year', width: 10 },
@@ -385,7 +386,7 @@ const exportReports = async (req, res) => {
         reports.forEach(report => {
             const sortedModifications = [...report.modifications].sort((a, b) => new Date(a.modifiedAt) - new Date(b.modifiedAt));
             const finalData = {
-                reportId: report._id,
+                stt: stt++,
                 user: report.userId.username,
                 totalVisits: sortedModifications.reduce((value, mod) => mod.totalVisits ?? value, report.totalVisits),
                 childrenUnder14: sortedModifications.reduce((value, mod) => mod.childrenUnder14 ?? value, report.childrenUnder14),
