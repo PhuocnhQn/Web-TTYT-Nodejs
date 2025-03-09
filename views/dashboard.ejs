@@ -24,7 +24,13 @@
         <ul>
             <li><a href="/dashboard" class="nav-link">Trang chủ</a></li>
             <% if (user.role==='admin' ) { %>
-                <li><a href="/add-user" class="nav-link">Thêm User</a></li>
+                <li class="reports-menu">
+                    <a href="#" class="nav-link">Admin</a>
+                    <ul class="sub-menu">
+                        <li><a href="/add-user" class="nav-link">Quảng trị người dùng</a></li>
+                        <li><a href="/qr" class="nav-link">Tạo QR</a></li>
+                    </ul>
+                </li>
                 <% } %>
                     <li class="reports-menu">
                         <a href="#" class="nav-link">Báo Cáo</a>

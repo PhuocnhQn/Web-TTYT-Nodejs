@@ -6,12 +6,46 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>User List</title>
     <link rel="stylesheet" href="/css/add-user.css">
+    <link rel="stylesheet" href="/css/dashboard.css">
 </head>
 
 <body>
-    <h1>Danh sách Người dùng</h1>
     <!-- Back to Home Button -->
-    <button onclick="window.location.href='/dashboard';">Về trang chủ</button>
+    <!-- <button onclick="window.location.href='/dashboard';">Về trang chủ</button> -->
+    <header>
+        <h1>Welcome, <%= user.name %>
+        </h1>
+        <% if (user.role==='admin' ) { %>
+            <p>Role: <%= user.role %>
+            </p>
+            <% } %>
+
+    </header>
+
+    <!-- Dashboard Menu -->
+    <nav>
+        <ul>
+            <li><a href="/dashboard" class="nav-link">Trang chủ</a></li>
+            <% if (user.role==='admin' ) { %>
+                <li class="reports-menu">
+                    <a href="#" class="nav-link">Admin</a>
+                    <ul class="sub-menu">
+                        <li><a href="/add-user" class="nav-link">Quảng trị người dùng</a></li>
+                        <li><a href="/qr" class="nav-link">Tạo QR</a></li>
+                    </ul>
+                </li>
+                <% } %>
+                    <li class="reports-menu">
+                        <a href="#" class="nav-link">Báo Cáo</a>
+                        <ul class="sub-menu">
+                            <li><a href="/reports/view" class="nav-link">Báo Cáo Tháng</a></li>
+                            <li><a href="/reports/aggregated" class="nav-link">Báo Cáo Tổng Hợp</a></li>
+                        </ul>
+                    </li>
+                    <li><a href="/user/change-password" class="nav-link">Đổi mật khẩu</a></li>
+                    <li><a href="/logout" class="logout-btn">Đăng xuất</a></li>
+        </ul>
+    </nav>
     <!-- Add User Section (New User Form) -->
     <h2>Thêm người dùng mới</h2>
     <div class="form-container">
@@ -45,7 +79,7 @@
         </form>
     </div>
 
-
+    <h2>Danh sách Người dùng</h2>
     <table>
         <thead>
             <tr>

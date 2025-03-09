@@ -8,7 +8,7 @@ const authRoutes = require('./routes/authRoutes');
 const userRoutes = require('./routes/userRoutes');
 const reportRoutes = require('./routes/reportRoutes');
 const dashboardRoutes = require('./routes/dashboardRoutes');
-
+const qrRoutes = require('./routes/qrRoutes'); // Import qrRoutes
 
 const app = express();
 const PORT = 3000;
@@ -46,6 +46,7 @@ app.use(authRoutes);
 app.use(userRoutes);
 app.use(reportRoutes);
 app.use(dashboardRoutes);
+app.use(qrRoutes); // Mount qrRoutes at /qr
 //Error page 404
 app.use((req, res, next) => {
     const errorMessage = 'Page Not Found1';

@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="/css/qr.css">
+    <link rel="stylesheet" href="/css/dashboard.css">
+
+    <title>QR Code Generator</title>
+
+</head>
+
+<body>
+    <header>
+        <h1>Welcome, <%= user.name %>
+        </h1>
+        <% if (user.role==='admin' ) { %>
+            <p>Role: <%= user.role %>
+            </p>
+            <% } %>
+
+    </header>
+
+    <!-- Dashboard Menu -->
+    <nav>
+        <ul>
+            <li><a href="/dashboard" class="nav-link">Trang chủ</a></li>
+            <% if (user.role==='admin' ) { %>
+                <li class="reports-menu">
+                    <a href="#" class="nav-link">Admin</a>
+                    <ul class="sub-menu">
+                        <li><a href="/add-user" class="nav-link">Quảng trị người dùng</a></li>
+                        <li><a href="/qr" class="nav-link">Tạo QR</a></li>
+                    </ul>
+                </li>
+                <% } %>
+                    <li class="reports-menu">
+                        <a href="#" class="nav-link">Báo Cáo</a>
+                        <ul class="sub-menu">
+                            <li><a href="/reports/view" class="nav-link">Báo Cáo Tháng</a></li>
+                            <li><a href="/reports/aggregated" class="nav-link">Báo Cáo Tổng Hợp</a></li>
+                        </ul>
+                    </li>
+                    <li><a href="/user/change-password" class="nav-link">Đổi mật khẩu</a></li>
+                    <li><a href="/logout" class="logout-btn">Đăng xuất</a></li>
+        </ul>
+    </nav>
+    <!-- Hộp thoại thông báo lỗi -->
+    <dialog id="errDialog">
+        <div id="modificationDetails">
+            <i class="fas fa-exclamation-triangle" style="color: red; font-size: 30px;"></i>
+            <h2>🔔 Thông Báo Lỗi:</h2>
+            <p id="error"></p>
+            <button id="closeDialog">Đóng</button>
+        </div>
+    </dialog>
+    <dialog id="successfullyDialog">
+        <div class="notification">
+            <h2>🔔 Thông Báo:</h2>
+            <p id="notificationSS">Không có lỗi nào!</p>
+            <button id="closeDialogSS">Đóng</button>
+        </div>
+    </dialog>
+    <div class="qr-form-container">
+        <h2>Trình tạo mã QR</h2>
+        <form id="qr-form">
+            <label for="url">Nhập URL:</label>
+            <input type="url" id="url" name="url" placeholder="https://example.com" required>
+            <button type="button" onclick="generateQRCode()">Tạo mã QR</button>
+            <button type="button" onclick="refreshPage()">Làm mới</button>
+        </form>
+
+        <div id="qr-code-container" style="display:none;">
+            <img id="qr-code" src="" alt="QR Code">
+            <a id="download-qr-code" href="#" download="qrcode.png">Tải xuống mã QR</a>
+        </div>
+    </div>
+    <script src="../js/qr.js"></script>
+</body>
+
+</html>

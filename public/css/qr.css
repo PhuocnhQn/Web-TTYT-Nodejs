@@ -1,0 +1,126 @@
+/* Global Styles */
+body {
+    font-family: 'Arial', sans-serif;
+    line-height: 1.6;
+    margin: 0;
+    padding: 0;
+    background-color: #f4f4f4;
+    color: #333;
+}
+
+main {
+    display: flex;
+    justify-content: center;
+    /* Căn giữa theo chiều ngang */
+    align-items: center;
+    /* Căn giữa theo chiều dọc */
+    height: 100vh;
+    /* Đảm bảo chiều cao của main chiếm toàn bộ màn hình */
+}
+
+h2 {
+    color: #343a40;
+    /* Màu chữ đậm */
+    margin-top: 20px;
+}
+
+label {
+    display: block;
+    margin-bottom: 5px;
+    color: #495057;
+    /* Màu chữ nhạt hơn */
+}
+
+input[type="url"] {
+    padding: 10px;
+    border: 1px solid #ced4da;
+    /* Đường viền */
+    border-radius: 5px;
+    width: 80%;
+    max-width: 400px;
+    margin-bottom: 15px;
+}
+
+button {
+    background-color: #007bff;
+    /* Màu xanh dương */
+    color: white;
+    padding: 10px 20px;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+    /* Hiệu ứng chuyển màu */
+    width: 130px;
+    /* Chiều rộng cố định */
+    height: 40px;
+    /* Chiều cao cố định */
+}
+
+button:hover {
+    background-color: #0056b3;
+    /* Màu xanh đậm hơn khi di chuột */
+}
+
+.qr-form-container {
+    width: 80%;
+    /* Hoặc một giá trị phù hợp */
+    max-width: 1000px;
+    /* Giới hạn chiều rộng tối đa */
+    margin: 20px auto;
+    /* Căn giữa theo chiều ngang và tạo khoảng cách trên dưới */
+    padding: 20px;
+    border: 1px solid #ccc;
+    border-radius: 8px;
+    text-align: center;
+    /* Căn giữa nội dung bên trong */
+}
+
+
+#qr-code-container {
+    margin-top: 20px;
+    background-color: white;
+    padding: 20px;
+    border-radius: 10px;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+    /* Hiệu ứng đổ bóng */
+    display: none;
+    /* Ẩn ban đầu */
+}
+
+#qr-code {
+    max-width: 300px;
+    max-height: 300px;
+    border: 1px solid #ced4da;
+    border-radius: 5px;
+}
+
+#download-qr-code {
+    display: block;
+    margin-top: 10px;
+    color: #007bff;
+    text-decoration: none;
+    font-weight: bold;
+}
+
+#download-qr-code:hover {
+    text-decoration: underline;
+}
+
+/* CSS cho nút trở về trang chủ */
+.back-to-home {
+    display: inline-block;
+    margin-top: 20px;
+    padding: 10px 20px;
+    background-color: #28a745;
+    /* Màu xanh lá cây */
+    color: white;
+    text-decoration: none;
+    border-radius: 5px;
+    transition: background-color 0.3s ease;
+}
+
+.back-to-home:hover {
+    background-color: #218838;
+    /* Màu xanh lá đậm hơn khi di chuột */
+}

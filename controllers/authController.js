@@ -40,18 +40,36 @@ const logout = (req, res) => {
     });
 };
 const renderChangePassword = async (req, res) => {
-    res.render('change-password');
+    try {
+        const user = await User.findById(req.session.userId); // Lấy thông tin user từ session
+
+        if (!user) {
+            // Xử lý trường hợp không tìm thấy user trong session (ví dụ, user chưa đăng nhập)
+            return res.redirect('/login'); // Chuyển hướng đến trang đăng nhập
+        } // Lấy danh sách users khác (nếu cần)
+        res.render('change-password', { user, error: null }); // Truyền cả 'users' và 'user' vào view
+    } catch (err) {
+        console.error("Error fetching users in renderAddUserPage", err);
+        res.status(500).json({
+            error: {
+                message: "Error fetching users. Please try again.",
+                type: 'server'
+            },
+            serverError: true
+        });
+    }
+    // res.render('change-password');
 };
 
 const changePassword = async (req, res) => {
     const { currentPassword, newPassword, confirmPassword } = req.body;
 
     if (!req.session.userId) {
-        return res.status(401).json({ message: 'Unauthorized' });
+        return res.status(401).json({ success: false, message: 'Unauthorized' });
     }
 
     if (newPassword !== confirmPassword) {
-        return res.status(400).json({ message: 'Mật khẩu mới không khớp.' });
+        return res.status(400).json({ success: false, message: 'Mật khẩu mới không khớp.' });
     }
 
     try {
@@ -59,16 +77,16 @@ const changePassword = async (req, res) => {
 
         const isMatch = await bcrypt.compare(currentPassword, user.password);
         if (!isMatch) {
-            return res.status(400).json({ message: 'Mật khẩu hiện tại không đúng.' });
+            return res.status(400).json({ success: false, message: 'Mật khẩu hiện tại không đúng.' });
         }
 
         const hashedPassword = await bcrypt.hash(newPassword, 10);
         user.password = hashedPassword;
         await user.save();
-        return res.status(200).json({ message: 'Đã cập nhật mật khẩu thành công!' });
+        return res.status(200).json({ success: false, message: 'Đã cập nhật mật khẩu thành công!' });
     } catch (error) {
         console.error(error);
-        return res.status(500).json({ error: 'Đã xảy ra lỗi khi cập nhật mật khẩu.' });
+        return res.status(500).json({ success: false, error: 'Đã xảy ra lỗi khi cập nhật mật khẩu.' });
     }
 };
 

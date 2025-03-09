@@ -225,6 +225,7 @@ const editReport = async (req, res) => {
 // Route để lấy thông tin sửa đổi chi tiết
 const viewReportDetail = async (req, res) => {
     try {
+
         const reportId = req.params.id;
         const report = await Report.findById(reportId).populate('modifications.modifiedBy', 'username');
 

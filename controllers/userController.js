@@ -13,10 +13,17 @@ async function fetchUsersFromDatabase() {
 
 const renderAddUserPage = async (req, res) => {
     try {
-        const users = await fetchUsersFromDatabase();
-        res.render('addUser', { users, error: null });
+        const user = await User.findById(req.session.userId); // Lấy thông tin user từ session
+
+        if (!user) {
+            // Xử lý trường hợp không tìm thấy user trong session (ví dụ, user chưa đăng nhập)
+            return res.redirect('/login'); // Chuyển hướng đến trang đăng nhập
+        }
+
+        const users = await fetchUsersFromDatabase(); // Lấy danh sách users khác (nếu cần)
+        res.render('addUser', { users, user, error: null }); // Truyền cả 'users' và 'user' vào view
     } catch (err) {
-        console.error("Error fetching users in renderAddUserPage", err)
+        console.error("Error fetching users in renderAddUserPage", err);
         res.status(500).json({
             error: {
                 message: "Error fetching users. Please try again.",

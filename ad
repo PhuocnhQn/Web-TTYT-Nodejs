@@ -1,0 +1,71 @@
+[33mcommit d80f5182ad2e3fd78687dbd6c79f8a67179e428b[m[33m ([m[1;36mHEAD[m[33m -> [m[1;32mmain[m[33m, [m[1;31morigin/main[m[33m)[m
+Author: Phuocnh <phuocnh.hiepz@gmail.com>
+Date:   Tue Feb 25 23:33:21 2025 +0700
+
+    update fix lỗi xuất báo cáo
+
+[33mcommit db238a1cae895b5700b418431b42079647c58b44[m
+Author: Phuocnh <phuocnh.hiepz@gmail.com>
+Date:   Mon Feb 24 14:55:13 2025 +0700
+
+    thêm ràng buột về thời gian báo cáo và thười gian sửa báo cáo
+
+[33mcommit f2c0d72f11324fbd9b44b211bd05b9c235c7b954[m
+Author: Phuocnh <phuocnh.hiepz@gmail.com>
+Date:   Mon Feb 24 12:52:23 2025 +0700
+
+    thêm ràng buột về thời gian báo cáo
+
+[33mcommit 01034eee85141d3da3caf723e8245cd244d142a6[m
+Author: Phuocnh <phuocnh.hiepz@gmail.com>
+Date:   Mon Feb 24 09:22:02 2025 +0700
+
+    thêm ràng buột về thười gian báo cáo
+
+[33mcommit ccf739ace0235c5b7cdc088f3a5103ebdb836ab0[m
+Author: Phuocnh <phuocnh.hiepz@gmail.com>
+Date:   Sun Feb 23 09:57:06 2025 +0700
+
+    update chức năng đọc file xls
+
+[33mcommit 91c121c2ae74820162cad9d05fbedad75003debc[m
+Author: Phuocnh <phuocnh.hiepz@gmail.com>
+Date:   Fri Jan 17 15:16:06 2025 +0700
+
+    Thay đổi giao diện thêm một số chức năng xem và tổng báo cáo theo tháng
+
+[33mcommit 51b844ff8a360ea9e4913bdada3d1b63db03019d[m
+Author: Phuocnh <phuocnh.hiepz@gmail.com>
+Date:   Fri Jan 17 13:02:45 2025 +0700
+
+    Thay đổi giao diện
+
+[33mcommit 3cead8780a0bc7a01db1e15988e7faa02af4621e[m
+Author: Phuocnh <phuocnh.hiepz@gmail.com>
+Date:   Tue Jan 7 13:57:40 2025 +0700
+
+    upload source v1.7.2025.2
+
+[33mcommit 91d402b37dfda1f06eeef4f995f9964555c654fe[m
+Author: Phuocnh <phuocnh.hiepz@gmail.com>
+Date:   Tue Jan 7 13:46:24 2025 +0700
+
+    upload source v1.7.2025
+
+[33mcommit 36501abf171205b509285ced5ee5f9a5ed2e5368[m
+Author: Phuocnh <phuocnh.hiepz@gmail.com>
+Date:   Fri Jan 3 12:27:03 2025 +0700
+
+    update phiên bản 1.1.2
+
+[33mcommit 0e24d903fc51f93cc95d2541885a6ef2b28bb072[m
+Author: Phuocnh <phuocnh.hiepz@gmail.com>
+Date:   Fri Dec 27 11:43:42 2024 +0700
+
+    upload source
+
+[33mcommit 27e1f033772d0a38529c1ad0fe1af627638d2a71[m
+Author: Phước Nguyễn <71834557+PhuocnhQn@users.noreply.github.com>
+Date:   Fri Dec 27 11:10:00 2024 +0700
+
+    Initial commit
