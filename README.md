@@ -64,7 +64,21 @@ Dự án này là một ứng dụng web được xây dựng bằng Node.js, Ex
    ```
 
    - Thay `chuoi_ket_noi_mongodb_cua_ban` bằng chuỗi kết nối MongoDB của bạn và `chuoi_bi_mat_cua_ban` bằng một chuỗi bí mật dùng cho quản lý phiên đăng nhập.
-
+   **cầu trúc dữ liệu MongoDB với user là a và mật khẩu là a:**
+ ```
+    _id
+    67d59c94429dae02b63b70c7
+    name
+    "a"
+    username
+    "a"
+    password
+    "$2b$10$QXfUWDm.RCtvyWu7da92p.vYr2/XGC8K5NNmT053AS82N2h26z1sy"
+    role
+    "admin"
+    __v
+    0
+ ```
 4. **Khởi chạy ứng dụng:**
 
    ```bash
