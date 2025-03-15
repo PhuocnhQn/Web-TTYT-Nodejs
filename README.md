@@ -1,138 +1,145 @@
-# Web-TTYT-Nodejs
-Web-TTYT-Nodejs
-# Web-TTYT-Nodejs: A Web Application for Health Reporting
+# Web-TTYT-Nodejs: Ứng Dụng Web Quản Lý Báo Cáo Y Tế
 
-## Overview
+## Tổng Quan
 
-This project is a web application built with Node.js, Express.js, and MongoDB, designed to facilitate health reporting. It allows authorized users to submit, view, edit, and manage health-related reports. The application features role-based access control, data aggregation, and error handling with a modal dialog.
+Dự án này là một ứng dụng web được xây dựng bằng Node.js, Express.js và MongoDB, giúp quản lý báo cáo y tế. Ứng dụng cho phép người dùng được phân quyền để gửi, xem, chỉnh sửa và quản lý báo cáo liên quan đến lĩnh vực y tế. Hệ thống có kiểm soát truy cập dựa trên vai trò, tổng hợp dữ liệu, và xử lý lỗi bằng hộp thoại thông báo.
 
-## Features
+## Tính Năng
 
-*   **User Authentication:** Secure login for users with different roles (admin and regular users).
-*   **Role-Based Access Control:** Different views and functionalities based on user roles.
-*   **Report Management:**
-    *   Users can add new reports for their assigned units.
-    *   Admins can add new users with different roles
-    *   Users can edit their own reports.
-    *   Admins can delete any report.
-    *   Track report modifications (who changed the data and when).
-*   **Report Viewing and Aggregation:**
-    *   Users can view their submitted reports for a specific month and year.
-    *   Users can view the aggregated values for a specific time period.
-    *   Admins can see all reports.
-*   **Data Export:** Admins can export reports to an Excel file.
-*   **Password Management:** Users can change their passwords.
-*  **Error Handling**: Displays errors gracefully using a modal dialog.
-*   **Responsive Design:** Basic layout that adapts to different screen sizes.
+- **Xác thực Người Dùng:** Đăng nhập an toàn với các vai trò khác nhau (quản trị viên và người dùng thông thường).
+- **Kiểm Soát Quyền Truy Cập:** Giao diện và chức năng thay đổi theo từng vai trò.
+- **Quản Lý Báo Cáo:**
+  - Người dùng có thể thêm báo cáo mới cho đơn vị được chỉ định.
+  - Quản trị viên có thể thêm người dùng với các vai trò khác nhau.
+  - Người dùng có thể chỉnh sửa báo cáo của họ.
+  - Quản trị viên có thể xóa bất kỳ báo cáo nào.
+  - Theo dõi lịch sử chỉnh sửa báo cáo (ai đã thay đổi dữ liệu và khi nào).
+- **Xem và Tổng Hợp Báo Cáo:**
+  - Người dùng có thể xem báo cáo đã gửi theo tháng và năm.
+  - Người dùng có thể xem tổng hợp dữ liệu theo một khoảng thời gian cụ thể.
+  - Quản trị viên có thể xem tất cả các báo cáo.
+- **Xuất Dữ Liệu:** Quản trị viên có thể xuất báo cáo ra tệp Excel.
+- **Quản Lý Mật Khẩu:** Người dùng có thể thay đổi mật khẩu của họ.
+- **Xử Lý Lỗi:** Hiển thị lỗi dưới dạng hộp thoại để thông báo cho người dùng.
+- **Giao Diện Thích Ứng:** Giao diện đơn giản, tự điều chỉnh với kích thước màn hình khác nhau.
 
-## Technologies Used
+## Công Nghệ Sử Dụng
 
-*   **Backend:**
-    *   Node.js
-    *   Express.js
-    *   MongoDB with Mongoose
-    *   bcrypt (for password hashing)
-    *   exceljs (for Excel export)
-    *   qrcode (cerate QR)
-*   **Frontend:**
-    *   HTML5
-    *   CSS3 (Custom Styles)
-    *   JavaScript (with DOM Manipulation)
-    * EJS templating
+- **Backend:**
+  - Node.js
+  - Express.js
+  - MongoDB với Mongoose
+  - bcrypt (mã hóa mật khẩu)
+  - exceljs (xuất tệp Excel)
+  - qrcode (tạo mã QR)
+- **Frontend:**
+  - HTML5
+  - CSS3 (Tùy chỉnh giao diện)
+  - JavaScript (DOM Manipulation)
+  - EJS (Giao diện động)
 
-## Setup Instructions
+## Hướng Dẫn Cài Đặt
 
-1.  **Clone the Repository:**
-    ```bash
-    git clone https://github.com/PhuocnhQn/Web-TTYT-Nodejs.git
-    cd Web-TTYT-Nodejs
-    ```
+1. **Clone kho mã nguồn:**
 
-2.  **Install Dependencies:**
-    ```bash
-    npm install
-    ```
+   ```bash
+   git clone https://github.com/PhuocnhQn/Web-TTYT-Nodejs.git
+   cd Web-TTYT-Nodejs
+   ```
 
-3.  **Set up MongoDB:**
-    - Make sure you have MongoDB installed and running.
-    -  Create a `.env` file in the root of the project with the following:
-    ```
-    MONGODB_URI=your_mongodb_connection_string
-    SESSION_SECRET=your_session_secret
-    ```
-     -  Make sure to change `your_mongodb_connection_string` with your actual MongoDB connection string, and `your_session_secret` with a secret that is used for your session management.
+2. **Cài đặt các thư viện cần thiết:**
 
-4.  **Start the Application:**
-    ```bash
-    npm start
-    ```
+   ```bash
+   npm install
+   ```
 
-5. **Access the Application**:
- - The application will be running at `http://localhost:3000`.
+3. **Thiết lập MongoDB:**
 
-## Database Setup
+   - Đảm bảo bạn đã cài đặt và chạy MongoDB.
+   - Tạo tệp `.env` trong thư mục gốc của dự án với nội dung sau:
 
-*   Make sure you have a database called `web-tyt`.
+   ```
+   MONGODB_URI=chuoi_ket_noi_mongodb_cua_ban
+   SESSION_SECRET=chuoi_bi_mat_cua_ban
+   ```
 
-*   The application uses Mongoose to interact with the database. The following models are used:
-    *   **User Model**: Stores user information including `name`, `username`, `password` (hashed), and `role`.
-    *  **Report Model**: Stores report information, including `userId`, `totalVisits`, `childrenUnder14`, `visitsWithIDExcludingChildren`, `reportingUnit`, `month`, `year`, `birthCertificate`, `deathCertificate`, and `percentage`, and an array of modifications.
+   - Thay `chuoi_ket_noi_mongodb_cua_ban` bằng chuỗi kết nối MongoDB của bạn và `chuoi_bi_mat_cua_ban` bằng một chuỗi bí mật dùng cho quản lý phiên đăng nhập.
 
-## Usage
+4. **Khởi chạy ứng dụng:**
 
-1.  **Access the Application**: Open your web browser and access the application at `http://localhost:3000`.
+   ```bash
+   npm start
+   ```
 
-2.  **Login**: Use the login form to log in as either an admin user or a regular user.
+5. **Truy cập ứng dụng:**
 
-3.  **Navigation:** Use the navigation menu to navigate to different pages:
-      -   **Trang chủ (Dashboard)**: Shows the list of reports, with options to add, edit and delete them.
-      -   **Thêm User (Add User)**: (Admin only) used to add new users.
-      -  **Xem Báo Cáo (View Reports)**: Displays a list of reports for a given month and year.
-      - **Xem Báo Cáo Tổng Hợp (View Aggregated Reports)**: Displays the sum of reports for a given date range.
-       -  **Đổi mật khẩu (Change Password)**: Allows you to change your password.
-       -   **Đăng xuất (Logout)**: Logs you out from the application.
+- Ứng dụng sẽ chạy tại `http://localhost:3000`.
 
-4.  **Report Submission and Management**:
-     - On the dashboard you can add a new report, edit existing reports, or delete reports (if you are an admin)
-     - If you are not an admin, you will not have the option to delete a report.
+## Thiết Lập Cơ Sở Dữ Liệu
 
-5.  **View Reports:**
-    - On the `Xem Báo Cáo` page select a month and a year to display reports for that specific time.
-     - On the `Xem Báo Cáo Tổng Hợp` you will need to select a start month/year and an end month/year.
+- Đảm bảo bạn có cơ sở dữ liệu tên là `web-tyt`.
+- Ứng dụng sử dụng Mongoose để làm việc với MongoDB. Các mô hình dữ liệu gồm:
+  - **User Model:** Lưu trữ thông tin người dùng gồm `name`, `username`, `password` (được mã hóa) và `role`.
+  - **Report Model:** Lưu trữ thông tin báo cáo, bao gồm `userId`, `totalVisits`, `childrenUnder14`, `visitsWithIDExcludingChildren`, `reportingUnit`, `month`, `year`, `birthCertificate`, `deathCertificate`, `percentage`, và danh sách chỉnh sửa.
 
-6. **Export Reports**:
-    - On the `Xem Báo Cáo` page click on the Xuất button to download a spreadsheet of the reports.
+## Cách Sử Dụng
 
-7.  **Error Handling:**
-    *   When an error occurs, a modal dialog will be displayed to inform the user.
+1. **Truy cập ứng dụng:** Mở trình duyệt và vào địa chỉ `http://localhost:3000`.
 
-## File Structure
+2. **Đăng nhập:** Dùng tài khoản để đăng nhập với vai trò quản trị viên hoặc người dùng.
 
--   `public/`: Contains static assets like CSS, and JavaScript files.
--   `routes/`: Contains route definitions for your application,
--   `controllers/`: Contains the route handlers.
--   `models/`: Contains Mongoose schema for your data models.
--   `services/`: Contains any reusable or independent services that do not require any controller context.
--   `middlewares/`: Contains middleware that you might need for authentication or authorization.
--   `views/`: Contains the EJS template files.
--  `app.js` (or `index.js`): The main file for running your express server.
-- `package.json` File where you have all the packages necessary for your project.
+3. **Chức năng chính:**
 
-## Important Considerations
+   - **Trang chủ (Dashboard):** Hiển thị danh sách báo cáo, có thể thêm, sửa hoặc xóa (chỉ admin mới có quyền xóa).
+   - **Thêm Người Dùng (Add User) (Chỉ Admin):** Thêm người dùng mới với vai trò tương ứng.
+   - **Xem Báo Cáo (View Reports):** Chọn tháng và năm để xem báo cáo.
+   - **Xem Báo Cáo Tổng Hợp (View Aggregated Reports):** Chọn khoảng thời gian để xem tổng hợp báo cáo.
+   - **Đổi Mật Khẩu (Change Password):** Thay đổi mật khẩu tài khoản.
+   - **Đăng Xuất (Logout):** Thoát khỏi hệ thống.
 
-*   **Security**:  Make sure to sanitize any user input to prevent vulnerabilities like XSS or SQL Injection.
-* **More comprehensive tests:** Make sure to add more tests for different scenarios that might exist.
-* **Scalability:**  If you expect a lot of users, you might need to optimize database queries, add caching, or configure a reverse proxy.
-*   **Error Handling:** Review all the code for any unhandled errors, and log those.
+4. **Quản lý báo cáo:**
 
-## Contributing
+   - Người dùng có thể tạo mới, chỉnh sửa báo cáo.
+   - Admin có thể xóa bất kỳ báo cáo nào.
 
-To contribute to this project you can clone the repository, and create a pull request with your changes. Make sure to test your code locally and that it aligns with the current coding standards of the project.
+5. **Xuất báo cáo:**
 
-## License
+   - Trong mục `Xem Báo Cáo`, nhấn vào nút `Xuất` để tải báo cáo dưới dạng file Excel.
 
-This project is licensed under the **MIT License**.
+6. **Xử lý lỗi:**
 
-## Contact
+   - Khi xảy ra lỗi, hệ thống sẽ hiển thị hộp thoại cảnh báo.
 
-phuocnh.hiepz@gmail.com
+## Cấu Trúc Thư Mục
+
+- `public/`: Chứa các tệp tĩnh như CSS, JavaScript.
+- `routes/`: Định nghĩa các tuyến đường (routes) của ứng dụng.
+- `controllers/`: Chứa các hàm xử lý yêu cầu.
+- `models/`: Chứa các schema Mongoose.
+- `services/`: Chứa các dịch vụ độc lập.
+- `middlewares/`: Chứa các middleware xác thực, phân quyền.
+- `views/`: Chứa các tệp giao diện EJS.
+- `app.js` (hoặc `index.js`): Tệp chính chạy server Express.
+- `package.json`: Danh sách thư viện cần thiết cho dự án.
+
+## Lưu Ý Quan Trọng
+
+- **Bảo mật:** Kiểm tra và lọc dữ liệu đầu vào để tránh các lỗ hổng như XSS, SQL Injection.
+- **Kiểm thử:** Cần bổ sung thêm các kiểm thử cho nhiều trường hợp khác nhau.
+- **Hiệu suất:** Nếu có nhiều người dùng, cần tối ưu hóa truy vấn cơ sở dữ liệu, sử dụng bộ nhớ đệm (cache) hoặc thiết lập proxy.
+- **Xử lý lỗi:** Kiểm tra kỹ code để đảm bảo không có lỗi chưa xử lý và ghi lại log lỗi.
+
+## Đóng Góp
+
+Nếu bạn muốn đóng góp cho dự án, hãy clone repo, tạo pull request với các thay đổi của bạn. Hãy đảm bảo kiểm thử mã nguồn trước khi gửi.
+
+## Giấy Phép
+
+Dự án này được cấp phép theo **MIT License**.
+
+## Liên Hệ
+
+Email: [phuocnh.hiepz@gmail.com](mailto\:phuocnh.hiepz@gmail.com)
+
+viết bằng README.md
+
