@@ -33,6 +33,7 @@ This project is a web application built with Node.js, Express.js, and MongoDB, d
     *   MongoDB with Mongoose
     *   bcrypt (for password hashing)
     *   exceljs (for Excel export)
+    *   qrcode (cerate QR)
 *   **Frontend:**
     *   HTML5
     *   CSS3 (Custom Styles)

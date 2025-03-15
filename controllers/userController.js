@@ -4,159 +4,150 @@ const bcrypt = require('bcrypt');
 // Function to fetch users from MongoDB using async/await
 async function fetchUsersFromDatabase() {
     try {
-        const users = await User.find({});
-        return users;
+        return await User.find({});
     } catch (err) {
-        throw err;  // You can handle the error here or throw it to be handled later
+        console.error("Error fetching users:", err);
+        return [];
     }
 }
 
+// Render trang thêm user
 const renderAddUserPage = async (req, res) => {
     try {
-        const user = await User.findById(req.session.userId); // Lấy thông tin user từ session
+        const user = await User.findById(req.session.userId);
+        if (!user) return res.redirect('/login');
 
-        if (!user) {
-            // Xử lý trường hợp không tìm thấy user trong session (ví dụ, user chưa đăng nhập)
-            return res.redirect('/login'); // Chuyển hướng đến trang đăng nhập
-        }
-
-        const users = await fetchUsersFromDatabase(); // Lấy danh sách users khác (nếu cần)
-        res.render('addUser', { users, user, error: null }); // Truyền cả 'users' và 'user' vào view
+        const users = await fetchUsersFromDatabase();
+        res.render('addUser', { users, user, error: null });
     } catch (err) {
-        console.error("Error fetching users in renderAddUserPage", err);
-        res.status(500).json({
-            error: {
-                message: "Error fetching users. Please try again.",
-                type: 'server'
-            },
-            serverError: true
-        });
+        console.error("Error rendering addUser page:", err);
+        res.status(500).json({ error: "Server error while loading users." });
     }
 };
 
-const addUser = (req, res) => {
+// Thêm người dùng mới
+const addUser = async (req, res) => {
     const { name, username, password, role } = req.body;
 
-    bcrypt.hash(password, 10, async (err, hashedPassword) => {
-        if (err) {
-            console.error("Error hashing password in addUser:", err);
-            return res.status(500).json({
-                error: {
-                    message: 'Error hashing password. Please try again.',
-                    type: 'server'
-                },
-                serverError: true
-            });
-        }
-
-        const newUser = new User({
-            name,
-            username,
-            password: hashedPassword,
-            role
+    if (!name || !username || !password || !role) {
+        return res.status(400).render('addUser', {
+            error: "All fields are required.",
+            user: await User.findById(req.session.userId),
+            users: await fetchUsersFromDatabase()
         });
+    }
 
-        try {
-            await newUser.save();
-            const users = await fetchUsersFromDatabase();
-            res.render('addUser', { users, error: null });
-        } catch (err) {
-            console.error("Error saving user in addUser:", err);
-            res.status(500).json({
-                error: {
-                    message: 'Error adding user. Please try again.',
-                    type: 'server'
-                },
-                serverError: true
-            });
-        }
-    });
+    try {
+        const hashedPassword = await bcrypt.hash(password, 10);
+        const newUser = new User({ name, username, password: hashedPassword, role });
+        await newUser.save();
+        res.render('addUser', {
+            successMessage: "User added successfully!",
+            user: await User.findById(req.session.userId),
+            users: await fetchUsersFromDatabase()
+        });
+    } catch (err) {
+        console.error("Error adding user:", err);
+        res.status(500).render('addUser', {
+            error: "Server error while adding user.",
+            user: await User.findById(req.session.userId),
+            users: await fetchUsersFromDatabase()
+        });
+    }
 };
 
-// Route để lấy danh sách người dùng và hiển thị trên trang
+
+// Lấy danh sách người dùng
 const getUsers = async (req, res) => {
     try {
-        const users = await User.find();
-        res.render('addUser', { users, error: null });
-    } catch (error) {
-        console.error('Error fetching users in getUsers:', error);
-        res.status(500).json({
-            error: {
-                message: 'An error occurred while fetching users. Please try again.',
-                type: 'server'
-            },
-            serverError: true
-        });
-    }
-};
-
-
-// Route để lấy thông tin người dùng theo ID
-const getUserById = async (req, res) => {
-    const { id } = req.params;
-    try {
-        const user = await User.findById(id);
-        if (!user) {
-            return res.status(404).json({ success: false, message: 'User not found' });
-        }
-        res.status(200).json({ success: true, user });
-    } catch (error) {
-        console.error('Error fetching user in getUserById:', error);
-        res.status(500).json({
-            success: false,
-            message: 'An error occurred while fetching the user. Please try again.',
-            type: 'server'
-        });
-    }
-};
-
-// Route để xóa người dùng theo ID
-const deleteUser = async (req, res) => {
-    const userId = req.params.id;
-
-    try {
-        await User.findByIdAndDelete(userId);
         const users = await fetchUsersFromDatabase();
         res.render('addUser', { users, error: null });
     } catch (err) {
-        console.error('Error deleting user in deleteUser:', err);
-        res.status(500).json({
-            error: {
-                message: 'Error deleting user. Please try again.',
-                type: 'server'
-            },
-            serverError: true
+        console.error("Error fetching users:", err);
+        res.status(500).json({ error: "Server error while fetching users." });
+    }
+};
+
+// Lấy thông tin người dùng theo ID
+const getUserById = async (req, res) => {
+    try {
+        const user = await User.findById(req.params.id);
+        if (!user) return res.status(404).json({ error: "User not found" });
+
+        res.status(200).json({ user });
+    } catch (err) {
+        console.error("Error fetching user:", err);
+        res.status(500).json({ error: "Server error while fetching user." });
+    }
+};
+
+// Xóa người dùng theo ID
+const deleteUser = async (req, res) => {
+    try {
+        const user = await User.findByIdAndDelete(req.params.id);
+        if (!user) return res.status(404).render('addUser', {
+            error: "User not found",
+            user: await User.findById(req.session.userId),
+            users: await fetchUsersFromDatabase()
+        });
+
+        res.render('addUser', {
+            successMessage: "User deleted successfully!",
+            user: await User.findById(req.session.userId),
+            users: await fetchUsersFromDatabase()
+        });
+    } catch (err) {
+        console.error("Error deleting user:", err);
+        res.status(500).render('addUser', {
+            error: "Server error while deleting user.",
+            user: await User.findById(req.session.userId),
+            users: await fetchUsersFromDatabase()
         });
     }
 };
 
-// Route to handle updating user details (with optional password update)
+
+// Cập nhật thông tin người dùng
 const updateUser = async (req, res) => {
-    const userId = req.params.id;
     const { name, username, role, password } = req.body;
+
+    if (!name || !username || !role) {
+        return res.status(400).render('addUser', {
+            error: "Name, username, and role are required.",
+            user: await User.findById(req.session.userId),
+            users: await fetchUsersFromDatabase()
+        });
+    }
 
     try {
         const updateData = { name, username, role };
 
         if (password && password.trim() !== '') {
-            const hashedPassword = await bcrypt.hash(password, 10);
-            updateData.password = hashedPassword;
+            updateData.password = await bcrypt.hash(password, 10);
         }
 
-        await User.findByIdAndUpdate(userId, updateData, { new: true });
-        const users = await fetchUsersFromDatabase();
-        res.render('addUser', { users, error: null });
+        const user = await User.findByIdAndUpdate(req.params.id, updateData, { new: true });
+        if (!user) return res.status(404).render('addUser', {
+            error: "User not found",
+            user: await User.findById(req.session.userId),
+            users: await fetchUsersFromDatabase()
+        });
+
+        res.render('addUser', {
+            successMessage: "User updated successfully!",
+            user: await User.findById(req.session.userId),
+            users: await fetchUsersFromDatabase()
+        });
     } catch (err) {
-        console.error('Error updating user in updateUser:', err);
-        res.status(500).json({
-            error: {
-                message: 'Error updating user. Please try again.',
-                type: 'server'
-            },
-            serverError: true
+        console.error("Error updating user:", err);
+        res.status(500).render('addUser', {
+            error: "Server error while updating user.",
+            user: await User.findById(req.session.userId),
+            users: await fetchUsersFromDatabase()
         });
     }
 };
+
 
 module.exports = {
     renderAddUserPage,

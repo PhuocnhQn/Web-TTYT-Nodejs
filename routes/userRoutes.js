@@ -3,7 +3,7 @@ const userController = require('../controllers/userController');
 const { isAdmin } = require('../middlewares/authMiddleware');
 const router = express.Router();
 
-router.get('/add-user', isAdmin, userController.renderAddUserPage);
+router.get('/users', isAdmin, userController.renderAddUserPage);
 router.post('/add-user', isAdmin, userController.addUser);
 router.get('/admin/get-users', isAdmin, userController.getUsers);
 router.get('/admin/get-user/:id', isAdmin, userController.getUserById);
